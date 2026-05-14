@@ -1,2 +1,2 @@
 # AgendaFront
-Frontend do Projeto Agenda CQRS + .NET + VueJs
+Frontend do Projeto Agenda VueJs

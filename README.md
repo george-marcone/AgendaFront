@@ -1,2 +1,2 @@
 # AgendaFront
-Frontend do Projeto Agenda VueJs
+Frontend do Projeto Agenda de contatos em VueJs

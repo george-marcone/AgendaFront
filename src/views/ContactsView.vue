@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
   ClipboardList,
   Eye,
+  EyeOff,
   LoaderCircle,
   LogOut,
   Pencil,
@@ -20,6 +21,7 @@ import {
   EMAIL_MAX_LENGTH,
   formatBrazilianMobilePhone,
   NAME_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
   PHONE_LOCAL_DIGIT_LENGTH,
   useContactsStore,
 } from '../stores/contactsStore';
@@ -27,6 +29,7 @@ import {
 const router = useRouter();
 const authStore = useAuthStore();
 const contactsStore = useContactsStore();
+const showContactPassword = ref(false);
 const {
   contacts,
   form,
@@ -53,6 +56,7 @@ const {
   validateNameField,
   validateEmailField,
   validatePhoneField,
+  validatePasswordField,
 } = contactsStore;
 
 async function deleteContact(contact) {
@@ -168,6 +172,37 @@ onMounted(() => contactsStore.loadContacts());
           <small class="field-hint">
             {{ phoneDigitsCount }}/{{ PHONE_LOCAL_DIGIT_LENGTH }} números
           </small>
+        </label>
+
+        <label v-if="!isEditing" class="field">
+          <span>Senha</span>
+          <div class="password-field">
+            <input
+              v-model="form.password"
+              :type="showContactPassword ? 'text' : 'password'"
+              autocomplete="new-password"
+              :minlength="PASSWORD_MIN_LENGTH"
+              required
+              :aria-invalid="Boolean(fieldErrors.password)"
+              aria-describedby="password-error"
+              @input="fieldErrors.password = ''"
+              @blur="validatePasswordField"
+            />
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="showContactPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              :title="showContactPassword ? 'Ocultar senha' : 'Mostrar senha'"
+              @click="showContactPassword = !showContactPassword"
+            >
+              <EyeOff v-if="showContactPassword" :size="18" />
+              <Eye v-else :size="18" />
+            </button>
+          </div>
+          <small v-if="fieldErrors.password" id="password-error" class="field-error">
+            {{ fieldErrors.password }}
+          </small>
+          <small class="field-hint">Mínimo de {{ PASSWORD_MIN_LENGTH }} caracteres</small>
         </label>
 
         <button type="submit" class="primary-action" :disabled="saving">

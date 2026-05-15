@@ -25,15 +25,14 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore(pinia);
-  const authenticated = authStore.isAuthenticated;
 
-  if (to.meta.requiresAuth && !authenticated) {
+  if (to.meta.requiresAuth && !(await authStore.authenticate())) {
     return { name: 'login' };
   }
 
-  if (to.name === 'login' && authenticated) {
+  if (to.name === 'login' && authStore.isAuthenticated && (await authStore.authenticate())) {
     return { name: 'agenda' };
   }
 

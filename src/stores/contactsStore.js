@@ -16,6 +16,7 @@ const DATE_FIELDS = [
 export const NAME_MAX_LENGTH = 50;
 export const EMAIL_MAX_LENGTH = 40;
 export const PHONE_LOCAL_DIGIT_LENGTH = 11;
+export const PASSWORD_MIN_LENGTH = 8;
 
 function getStorage() {
   return typeof localStorage === 'undefined' ? null : localStorage;
@@ -47,6 +48,7 @@ export function createEmptyContactForm() {
     name: '',
     email: '',
     phone: '',
+    password: '',
   };
 }
 
@@ -55,6 +57,7 @@ export function createEmptyContactFieldErrors() {
     name: '',
     email: '',
     phone: '',
+    password: '',
   };
 }
 
@@ -279,12 +282,30 @@ export const useContactsStore = defineStore('contacts', {
       return !this.fieldErrors.phone;
     },
 
+    validatePasswordField() {
+      if (this.isEditing) {
+        this.fieldErrors.password = '';
+        return true;
+      }
+
+      if (!this.form.password) {
+        this.fieldErrors.password = 'Informe a senha.';
+      } else if (this.form.password.length < PASSWORD_MIN_LENGTH) {
+        this.fieldErrors.password = `Informe no mínimo ${PASSWORD_MIN_LENGTH} caracteres.`;
+      } else {
+        this.fieldErrors.password = '';
+      }
+
+      return !this.fieldErrors.password;
+    },
+
     validateContactForm() {
       this.clearFieldErrors();
       const isValid = [
         this.validateNameField(),
         this.validateEmailField(),
         this.validatePhoneField(),
+        this.validatePasswordField(),
       ].every(Boolean);
 
       if (!isValid) {
@@ -321,6 +342,7 @@ export const useContactsStore = defineStore('contacts', {
       this.form = {
         ...contact,
         phone: formatBrazilianMobilePhone(contact.phone),
+        password: '',
       };
     },
 
@@ -345,7 +367,9 @@ export const useContactsStore = defineStore('contacts', {
       }
 
       const payload = {
-        ...this.form,
+        id: this.form.id,
+        name: this.form.name,
+        email: this.form.email,
         phone: toBrazilianE164Phone(this.form.phone),
       };
       const wasEditing = this.isEditing;
@@ -356,7 +380,10 @@ export const useContactsStore = defineStore('contacts', {
           await contactsApi.update(payload);
           this.successMessage = 'Contato atualizado.';
         } else {
-          await contactsApi.create(payload);
+          await contactsApi.create({
+            ...payload,
+            password: this.form.password,
+          });
           this.successMessage = 'Contato cadastrado.';
         }
 

@@ -32,10 +32,16 @@ npm run test:unit
 
 Os testes usam Vitest, Vue Test Utils e jsdom.
 
-## Login mockado
+## Login JWT
 
-- E-mail: `gmarcone@gmail.com`
-- Senha: `123456`
+O login usa o endpoint real `POST /api/Auth/login` do CoreFlow e salva a sessão JWT em
+`localStorage`. O guard de rotas valida sessões persistidas em `GET /api/Auth/authenticate`,
+e o CRUD envia `Authorization: Bearer <token>` em todas as chamadas protegidas.
+
+Credenciais seedadas do backend para desenvolvimento:
+
+- E-mail: `admin@coreflow.local`
+- Senha: `Admin@123456`
 
 ## API
 
@@ -74,11 +80,16 @@ Manter `VITE_API_BASE_URL=/api` evita depender de CORS no backend, porque o prox
 
 Endpoints consumidos:
 
+- `POST /api/Auth/login`
+- `GET /api/Auth/authenticate`
 - `GET /api/User`
 - `GET /api/User/{id}`
 - `POST /api/User`
 - `PUT /api/User/{id}`
 - `DELETE /api/User/{id}`
+
+No cadastro (`POST /api/User`), o front envia `name`, `email`, `phone` e `password`.
+Na edição (`PUT /api/User/{id}`), o backend recebe apenas `id`, `name`, `email` e `phone`.
 
 No backend CoreFlow não há arquivo `.env`. Os equivalentes são:
 

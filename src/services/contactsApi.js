@@ -1,39 +1,6 @@
-const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-const apiBaseUrl = configuredBaseUrl.replace(/\/$/, '');
-const userEndpoint = `${apiBaseUrl}/User`;
+import { apiRequest } from './apiClient';
 
-async function request(path = '', options = {}) {
-  const headers = {
-    Accept: 'application/json',
-    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-    ...options.headers,
-  };
-
-  let response;
-
-  try {
-    response = await fetch(`${userEndpoint}${path}`, {
-      ...options,
-      headers,
-    });
-  } catch {
-    throw new Error(
-      `Não foi possível conectar à API em ${userEndpoint}${path}. Verifique se o CoreFlow está rodando e se o proxy do front aponta para a porta correta.`,
-    );
-  }
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  const text = await response.text();
-
-  if (!response.ok) {
-    throw new Error(text || `Erro ${response.status} ao acessar a API.`);
-  }
-
-  return text ? JSON.parse(text) : null;
-}
+const userEndpoint = '/User';
 
 function toPayload(contact) {
   return {
@@ -44,31 +11,41 @@ function toPayload(contact) {
   };
 }
 
+function toCreatePayload(contact) {
+  return {
+    ...toPayload(contact),
+    password: contact.password,
+  };
+}
+
 export const contactsApi = {
   list() {
-    return request();
+    return apiRequest(userEndpoint, { auth: true });
   },
 
   getById(id) {
-    return request(`/${encodeURIComponent(id)}`);
+    return apiRequest(`${userEndpoint}/${encodeURIComponent(id)}`, { auth: true });
   },
 
   create(contact) {
-    return request('', {
+    return apiRequest(userEndpoint, {
+      auth: true,
       method: 'POST',
-      body: JSON.stringify(toPayload(contact)),
+      body: JSON.stringify(toCreatePayload(contact)),
     });
   },
 
   update(contact) {
-    return request(`/${encodeURIComponent(contact.id)}`, {
+    return apiRequest(`${userEndpoint}/${encodeURIComponent(contact.id)}`, {
+      auth: true,
       method: 'PUT',
       body: JSON.stringify(toPayload(contact)),
     });
   },
 
   remove(id) {
-    return request(`/${encodeURIComponent(id)}`, {
+    return apiRequest(`${userEndpoint}/${encodeURIComponent(id)}`, {
+      auth: true,
       method: 'DELETE',
     });
   },

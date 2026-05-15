@@ -1,61 +1,83 @@
 import { defineStore } from 'pinia';
-
-const AUTH_KEY = 'agenda-front-auth';
-const MOCK_USER = {
-  email: 'gmarcone@gmail.com',
-  password: '123456',
-};
-
-function getStorage() {
-  return typeof localStorage === 'undefined' ? null : localStorage;
-}
-
-function readSession() {
-  const storage = getStorage();
-  const rawSession = storage?.getItem(AUTH_KEY);
-
-  if (!rawSession) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(rawSession);
-  } catch {
-    storage.removeItem(AUTH_KEY);
-    return null;
-  }
-}
+import { authApi } from '../services/authApi';
+import {
+  clearAuthSession,
+  isSessionValid,
+  normalizeAuthResponse,
+  readAuthSession,
+  saveAuthSession,
+} from '../services/authSession';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    session: readSession(),
+    session: readAuthSession(),
+    authChecked: false,
+    loading: false,
   }),
 
   getters: {
-    isAuthenticated: (state) => Boolean(state.session),
+    isAuthenticated: (state) => isSessionValid(state.session),
+    user: (state) => state.session?.user || null,
   },
 
   actions: {
-    login(email, password) {
-      const validEmail = email.trim().toLowerCase() === MOCK_USER.email;
-      const validPassword = password === MOCK_USER.password;
+    setSession(response) {
+      const session = normalizeAuthResponse(response);
 
-      if (!validEmail || !validPassword) {
+      this.session = session;
+      this.authChecked = true;
+      saveAuthSession(session);
+
+      return session;
+    },
+
+    async login(email, password) {
+      this.loading = true;
+
+      try {
+        const response = await authApi.login({ email, password });
+        return this.setSession(response);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async authenticate({ force = false } = {}) {
+      if (!isSessionValid(this.session)) {
+        this.logout();
         return false;
       }
 
-      this.session = {
-        email: MOCK_USER.email,
-        authenticatedAt: new Date().toISOString(),
-      };
+      if (this.authChecked && !force) {
+        return true;
+      }
 
-      getStorage()?.setItem(AUTH_KEY, JSON.stringify(this.session));
-      return true;
+      try {
+        const response = await authApi.authenticate(this.session.accessToken, this.session.tokenType);
+
+        if (!response?.authenticated) {
+          this.logout();
+          return false;
+        }
+
+        this.session = {
+          ...this.session,
+          user: response.user || this.session.user,
+        };
+        this.authChecked = true;
+        saveAuthSession(this.session);
+
+        return true;
+      } catch {
+        this.logout();
+        return false;
+      }
     },
 
     logout() {
       this.session = null;
-      getStorage()?.removeItem(AUTH_KEY);
+      this.authChecked = false;
+      clearAuthSession();
     },
   },
 });

@@ -91,6 +91,7 @@ describe('ContactsView', () => {
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('ana@email.com');
     await inputs[2].setValue('81997236704');
+    await inputs[3].setValue('User@123456');
 
     expect(inputs[0].attributes('maxlength')).toBe('50');
     expect(inputs[1].attributes('maxlength')).toBe('40');
@@ -106,6 +107,7 @@ describe('ContactsView', () => {
         name: 'Ana Silva',
         email: 'ana@email.com',
         phone: '+5581997236704',
+        password: 'User@123456',
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
@@ -171,6 +173,7 @@ describe('ContactsView', () => {
     expect(wrapper.text()).toContain('Informe o nome.');
     expect(wrapper.text()).toContain('Informe o e-mail.');
     expect(wrapper.text()).toContain('Informe o telefone.');
+    expect(wrapper.text()).toContain('Informe a senha.');
   });
 
   it('valida formato de e-mail e telefone incompleto', async () => {
@@ -181,6 +184,7 @@ describe('ContactsView', () => {
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('email-invalido');
     await inputs[2].setValue('119999');
+    await inputs[3].setValue('User@123456');
     await wrapper.find('form.contact-form').trigger('submit.prevent');
 
     expect(contactsApiMock.create).not.toHaveBeenCalled();

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Eye, EyeOff, LogIn } from '@lucide/vue';
+import { Eye, EyeOff, LoaderCircle, LogIn } from '@lucide/vue';
 import { useAuthStore } from '../stores/authStore';
 
 const router = useRouter();
@@ -10,16 +10,20 @@ const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
 const errorMessage = ref('');
+const submitting = ref(false);
 
-function handleSubmit() {
+async function handleSubmit() {
   errorMessage.value = '';
+  submitting.value = true;
 
-  if (!authStore.login(email.value, password.value)) {
-    errorMessage.value = 'E-mail ou senha inválidos.';
-    return;
+  try {
+    await authStore.login(email.value, password.value);
+    router.push({ name: 'agenda' });
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'E-mail ou senha inválidos.';
+  } finally {
+    submitting.value = false;
   }
-
-  router.push({ name: 'agenda' });
 }
 </script>
 
@@ -41,7 +45,7 @@ function handleSubmit() {
             v-model="email"
             type="email"
             autocomplete="email"
-            placeholder="gmarcone@gmail.com"
+            placeholder="admin@coreflow.local"
             required
           />
         </label>
@@ -53,7 +57,7 @@ function handleSubmit() {
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               autocomplete="current-password"
-              placeholder="123456"
+              placeholder="Admin@123456"
               required
             />
             <button
@@ -73,9 +77,10 @@ function handleSubmit() {
           {{ errorMessage }}
         </p>
 
-        <button type="submit" class="primary-action">
-          <LogIn :size="18" />
-          Entrar
+        <button type="submit" class="primary-action" :disabled="submitting">
+          <LoaderCircle v-if="submitting" class="spin" :size="18" />
+          <LogIn v-else :size="18" />
+          {{ submitting ? 'Entrando' : 'Entrar' }}
         </button>
       </form>
     </section>

@@ -22,4 +22,15 @@ export const authApi = {
       },
     });
   },
+
+  changeOwnPassword({ currentPassword, newPassword }) {
+    return apiRequest('/User/me/password', {
+      auth: true,
+      method: 'PATCH',
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+    });
+  },
 };

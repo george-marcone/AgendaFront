@@ -6,11 +6,14 @@ export const apiBaseUrl = configuredBaseUrl.replace(/\/$/, '');
 const MESSAGE_TRANSLATIONS = {
   'Email and password are required.': 'Informe e-mail e senha.',
   'Invalid email or password.': 'E-mail ou senha inválidos.',
+  'Current password is invalid.': 'Senha atual inválida.',
 };
 
 const FIELD_TRANSLATIONS = {
+  CurrentPassword: 'Senha atual',
   Email: 'E-mail',
   Name: 'Nome',
+  NewPassword: 'Nova senha',
   Password: 'Senha',
   Phone: 'Telefone',
 };
@@ -20,6 +23,9 @@ const VALIDATION_TRANSLATIONS = {
   'Email is invalid': 'E-mail inválido.',
   'Email is required': 'E-mail obrigatório.',
   'Name is required': 'Nome obrigatório.',
+  'Current password is required': 'Senha atual obrigatória.',
+  'New password is required': 'Nova senha obrigatória.',
+  'New password must contain at least 8 characters': 'A nova senha deve ter pelo menos 8 caracteres.',
   'Password is required': 'Senha obrigatória.',
   'Password must contain at least 8 characters': 'A senha deve ter pelo menos 8 caracteres.',
   'Phone already exists': 'Telefone já cadastrado.',

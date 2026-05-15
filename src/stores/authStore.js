@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', {
     session: readAuthSession(),
     authChecked: false,
     loading: false,
+    changingPassword: false,
   }),
 
   getters: {
@@ -39,6 +40,16 @@ export const useAuthStore = defineStore('auth', {
         return this.setSession(response);
       } finally {
         this.loading = false;
+      }
+    },
+
+    async changePassword(currentPassword, newPassword) {
+      this.changingPassword = true;
+
+      try {
+        return await authApi.changeOwnPassword({ currentPassword, newPassword });
+      } finally {
+        this.changingPassword = false;
       }
     },
 

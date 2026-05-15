@@ -300,6 +300,10 @@ h3 {
   @apply grid justify-items-end gap-2;
 }
 
+.topbar-buttons {
+  @apply flex flex-wrap justify-end gap-2;
+}
+
 .logged-user {
   @apply mb-0 text-right font-extrabold;
   color: var(--ink);
@@ -314,6 +318,19 @@ h3 {
 
 .panel {
   @apply p-[22px];
+}
+
+.password-change-panel {
+  @apply mx-auto mb-[18px] w-full max-w-[1180px];
+}
+
+.password-change-grid {
+  @apply grid gap-[18px];
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.password-change-action {
+  @apply mt-[18px];
 }
 
 .panel-heading {
@@ -459,12 +476,20 @@ tbody tr:last-child td {
     @apply w-full justify-items-start;
   }
 
+  .topbar-buttons {
+    @apply w-full justify-start;
+  }
+
   .logged-user {
     @apply text-left;
   }
 
   .ghost-button {
     @apply w-full;
+  }
+
+  .password-change-grid {
+    grid-template-columns: 1fr;
   }
 
   .details-panel dl {

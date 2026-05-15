@@ -6,6 +6,7 @@ import {
   ClipboardList,
   Eye,
   EyeOff,
+  KeyRound,
   LoaderCircle,
   LogOut,
   Pencil,
@@ -21,15 +22,29 @@ import {
   EMAIL_MAX_LENGTH,
   formatBrazilianMobilePhone,
   NAME_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
   PHONE_LOCAL_DIGIT_LENGTH,
   useContactsStore,
 } from '../stores/contactsStore';
+import { calculatePasswordStrength, PASSWORD_MIN_LENGTH } from '../services/passwordStrength';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const contactsStore = useContactsStore();
-const showContactPassword = ref(false);
+const passwordPanelOpen = ref(false);
+const showCurrentPassword = ref(false);
+const showNewPassword = ref(false);
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+});
+const passwordErrors = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+});
+const passwordSuccessMessage = ref('');
+const passwordErrorMessage = ref('');
 const {
   contacts,
   form,
@@ -45,7 +60,6 @@ const {
   isEditing,
   filteredContacts,
   phoneDigitsCount,
-  passwordStrength,
 } = storeToRefs(contactsStore);
 const {
   loadContacts,
@@ -57,9 +71,9 @@ const {
   validateNameField,
   validateEmailField,
   validatePhoneField,
-  validatePasswordField,
 } = contactsStore;
 const loggedUserName = computed(() => getFirstAndLastName(authStore.user));
+const ownPasswordStrength = computed(() => calculatePasswordStrength(passwordForm.value.newPassword));
 
 function getFirstAndLastName(user) {
   const explicitName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
@@ -88,6 +102,82 @@ function logout() {
   router.push({ name: 'login' });
 }
 
+function resetPasswordForm() {
+  passwordForm.value = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  };
+  passwordErrors.value = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  };
+  showCurrentPassword.value = false;
+  showNewPassword.value = false;
+}
+
+function togglePasswordPanel() {
+  passwordPanelOpen.value = !passwordPanelOpen.value;
+  passwordSuccessMessage.value = '';
+  passwordErrorMessage.value = '';
+
+  if (!passwordPanelOpen.value) {
+    resetPasswordForm();
+  }
+}
+
+function clearPasswordError(field) {
+  passwordErrors.value[field] = '';
+  passwordSuccessMessage.value = '';
+  passwordErrorMessage.value = '';
+}
+
+function validatePasswordChangeForm() {
+  passwordErrors.value = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  };
+
+  if (!passwordForm.value.currentPassword) {
+    passwordErrors.value.currentPassword = 'Informe a senha atual.';
+  }
+
+  if (!passwordForm.value.newPassword) {
+    passwordErrors.value.newPassword = 'Informe a nova senha.';
+  } else if (passwordForm.value.newPassword.length < PASSWORD_MIN_LENGTH) {
+    passwordErrors.value.newPassword = `Informe no mínimo ${PASSWORD_MIN_LENGTH} caracteres.`;
+  }
+
+  if (!passwordForm.value.confirmPassword) {
+    passwordErrors.value.confirmPassword = 'Confirme a nova senha.';
+  } else if (passwordForm.value.confirmPassword !== passwordForm.value.newPassword) {
+    passwordErrors.value.confirmPassword = 'As senhas não conferem.';
+  }
+
+  return Object.values(passwordErrors.value).every((message) => !message);
+}
+
+async function changeOwnPassword() {
+  passwordSuccessMessage.value = '';
+  passwordErrorMessage.value = '';
+
+  if (!validatePasswordChangeForm()) {
+    passwordErrorMessage.value = 'Revise os campos de senha.';
+    return;
+  }
+
+  try {
+    await authStore.changePassword(passwordForm.value.currentPassword, passwordForm.value.newPassword);
+    resetPasswordForm();
+    passwordSuccessMessage.value = 'Senha alterada.';
+  } catch (error) {
+    passwordErrorMessage.value =
+      error instanceof Error ? error.message : 'Não foi possível alterar a senha.';
+  }
+}
+
 onMounted(() => contactsStore.loadContacts());
 </script>
 
@@ -102,12 +192,168 @@ onMounted(() => contactsStore.loadContacts());
       <div class="topbar-actions">
         <p v-if="loggedUserName" class="logged-user">{{ loggedUserName }}</p>
 
-        <button class="ghost-button" type="button" @click="logout">
-          <LogOut :size="18" />
-          Sair
-        </button>
+        <div class="topbar-buttons">
+          <button
+            class="ghost-button"
+            type="button"
+            aria-controls="password-change-panel"
+            :aria-expanded="passwordPanelOpen"
+            @click="togglePasswordPanel"
+          >
+            <KeyRound :size="18" />
+            Alterar senha
+          </button>
+
+          <button class="ghost-button" type="button" @click="logout">
+            <LogOut :size="18" />
+            Sair
+          </button>
+        </div>
       </div>
     </header>
+
+    <form
+      v-if="passwordPanelOpen"
+      id="password-change-panel"
+      class="panel password-change-panel"
+      novalidate
+      @submit.prevent="changeOwnPassword"
+    >
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">Conta</span>
+          <h2>Alterar minha senha</h2>
+        </div>
+
+        <button
+          type="button"
+          class="icon-button"
+          aria-label="Fechar alteração de senha"
+          title="Fechar alteração de senha"
+          @click="togglePasswordPanel"
+        >
+          <X :size="18" />
+        </button>
+      </div>
+
+      <p v-if="passwordErrorMessage" class="feedback error" role="alert">
+        {{ passwordErrorMessage }}
+      </p>
+      <p v-if="passwordSuccessMessage" class="feedback success" role="status">
+        {{ passwordSuccessMessage }}
+      </p>
+
+      <div class="password-change-grid">
+        <label class="field">
+          <span>Senha atual</span>
+          <div class="password-field">
+            <input
+              v-model="passwordForm.currentPassword"
+              :type="showCurrentPassword ? 'text' : 'password'"
+              autocomplete="current-password"
+              required
+              :aria-invalid="Boolean(passwordErrors.currentPassword)"
+              aria-describedby="current-password-error"
+              @input="clearPasswordError('currentPassword')"
+            />
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="showCurrentPassword ? 'Ocultar senha atual' : 'Mostrar senha atual'"
+              :title="showCurrentPassword ? 'Ocultar senha atual' : 'Mostrar senha atual'"
+              @click="showCurrentPassword = !showCurrentPassword"
+            >
+              <EyeOff v-if="showCurrentPassword" :size="18" />
+              <Eye v-else :size="18" />
+            </button>
+          </div>
+          <small
+            v-if="passwordErrors.currentPassword"
+            id="current-password-error"
+            class="field-error"
+          >
+            {{ passwordErrors.currentPassword }}
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Nova senha</span>
+          <div class="password-field">
+            <input
+              v-model="passwordForm.newPassword"
+              :type="showNewPassword ? 'text' : 'password'"
+              autocomplete="new-password"
+              :minlength="PASSWORD_MIN_LENGTH"
+              required
+              :aria-invalid="Boolean(passwordErrors.newPassword)"
+              aria-describedby="new-password-error new-password-strength new-password-hint"
+              @input="clearPasswordError('newPassword')"
+            />
+            <button
+              type="button"
+              class="icon-button"
+              :aria-label="showNewPassword ? 'Ocultar nova senha' : 'Mostrar nova senha'"
+              :title="showNewPassword ? 'Ocultar nova senha' : 'Mostrar nova senha'"
+              @click="showNewPassword = !showNewPassword"
+            >
+              <EyeOff v-if="showNewPassword" :size="18" />
+              <Eye v-else :size="18" />
+            </button>
+          </div>
+          <small v-if="passwordErrors.newPassword" id="new-password-error" class="field-error">
+            {{ passwordErrors.newPassword }}
+          </small>
+          <div
+            v-if="passwordForm.newPassword"
+            id="new-password-strength"
+            class="password-strength"
+            :class="`password-strength--${ownPasswordStrength.level}`"
+            aria-live="polite"
+          >
+            <div
+              class="password-strength-track"
+              role="meter"
+              :aria-valuenow="ownPasswordStrength.percent"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-valuetext="ownPasswordStrength.label"
+            >
+              <span :style="{ width: `${ownPasswordStrength.percent}%` }"></span>
+            </div>
+            <small>Força da senha: {{ ownPasswordStrength.label }}</small>
+          </div>
+          <small id="new-password-hint" class="field-hint">
+            Mínimo de {{ PASSWORD_MIN_LENGTH }} caracteres, com letras, números e símbolos.
+          </small>
+        </label>
+
+        <label class="field">
+          <span>Confirmar nova senha</span>
+          <input
+            v-model="passwordForm.confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            required
+            :aria-invalid="Boolean(passwordErrors.confirmPassword)"
+            aria-describedby="confirm-password-error"
+            @input="clearPasswordError('confirmPassword')"
+          />
+          <small
+            v-if="passwordErrors.confirmPassword"
+            id="confirm-password-error"
+            class="field-error"
+          >
+            {{ passwordErrors.confirmPassword }}
+          </small>
+        </label>
+      </div>
+
+      <button type="submit" class="primary-action password-change-action" :disabled="authStore.changingPassword">
+        <LoaderCircle v-if="authStore.changingPassword" class="spin" :size="18" />
+        <KeyRound v-else :size="18" />
+        Salvar senha
+      </button>
+    </form>
 
     <section class="agenda-grid">
       <form class="panel contact-form" novalidate @submit.prevent="saveContact">
@@ -189,58 +435,6 @@ onMounted(() => contactsStore.loadContacts());
           </small>
           <small class="field-hint">
             {{ phoneDigitsCount }}/{{ PHONE_LOCAL_DIGIT_LENGTH }} números
-          </small>
-        </label>
-
-        <label v-if="!isEditing" class="field">
-          <span>Senha</span>
-          <div class="password-field">
-            <input
-              v-model="form.password"
-              :type="showContactPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              :minlength="PASSWORD_MIN_LENGTH"
-              required
-              :aria-invalid="Boolean(fieldErrors.password)"
-              aria-describedby="password-error password-strength password-hint"
-              @input="fieldErrors.password = ''"
-              @blur="validatePasswordField"
-            />
-            <button
-              type="button"
-              class="icon-button"
-              :aria-label="showContactPassword ? 'Ocultar senha' : 'Mostrar senha'"
-              :title="showContactPassword ? 'Ocultar senha' : 'Mostrar senha'"
-              @click="showContactPassword = !showContactPassword"
-            >
-              <EyeOff v-if="showContactPassword" :size="18" />
-              <Eye v-else :size="18" />
-            </button>
-          </div>
-          <small v-if="fieldErrors.password" id="password-error" class="field-error">
-            {{ fieldErrors.password }}
-          </small>
-          <div
-            v-if="form.password"
-            id="password-strength"
-            class="password-strength"
-            :class="`password-strength--${passwordStrength.level}`"
-            aria-live="polite"
-          >
-            <div
-              class="password-strength-track"
-              role="meter"
-              :aria-valuenow="passwordStrength.percent"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              :aria-valuetext="passwordStrength.label"
-            >
-              <span :style="{ width: `${passwordStrength.percent}%` }"></span>
-            </div>
-            <small>Força da senha: {{ passwordStrength.label }}</small>
-          </div>
-          <small id="password-hint" class="field-hint">
-            Mínimo de {{ PASSWORD_MIN_LENGTH }} caracteres, com letras, números e símbolos.
           </small>
         </label>
 

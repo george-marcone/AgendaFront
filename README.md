@@ -86,10 +86,16 @@ Endpoints consumidos:
 - `GET /api/User/{id}`
 - `POST /api/User`
 - `PUT /api/User/{id}`
+- `PATCH /api/User/me/password`
 - `DELETE /api/User/{id}`
 
-No cadastro (`POST /api/User`), o front envia `name`, `email`, `phone` e `password`.
-Na edição (`PUT /api/User/{id}`), o backend recebe apenas `id`, `name`, `email` e `phone`.
+No cadastro (`POST /api/User`), o front exibe apenas `name`, `email` e `phone`, e envia
+`password` internamente com o valor default `Admin@123456`.
+Na edição (`PUT /api/User/{id}`), o backend recebe apenas `id`, `name`, `email` e `phone`;
+alterações de contato não alteram senha.
+
+A troca de senha usa `PATCH /api/User/me/password`, sempre com base no usuário autenticado
+pelo JWT. A tela permite alterar apenas a própria senha.
 
 No backend CoreFlow não há arquivo `.env`. Os equivalentes são:
 

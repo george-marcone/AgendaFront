@@ -15,12 +15,22 @@ const contactsApiMock = vi.hoisted(() => ({
   remove: vi.fn(),
 }));
 
+const authApiMock = vi.hoisted(() => ({
+  login: vi.fn(),
+  authenticate: vi.fn(),
+  changeOwnPassword: vi.fn(),
+}));
+
 vi.mock('vue-router', () => ({
   useRouter: () => routerMock,
 }));
 
 vi.mock('../../services/contactsApi', () => ({
   contactsApi: contactsApiMock,
+}));
+
+vi.mock('../../services/authApi', () => ({
+  authApi: authApiMock,
 }));
 
 function mountContactsView() {
@@ -42,6 +52,7 @@ describe('ContactsView', () => {
     contactsApiMock.update.mockResolvedValue(null);
     contactsApiMock.getById.mockResolvedValue(null);
     contactsApiMock.remove.mockResolvedValue(null);
+    authApiMock.changeOwnPassword.mockResolvedValue(null);
   });
 
   it('exibe primeiro e ultimo nome da pessoa logada acima do botao sair', async () => {
@@ -63,7 +74,10 @@ describe('ContactsView', () => {
     await flushPromises();
 
     expect(wrapper.find('.logged-user').text()).toBe('George Silva');
-    expect(wrapper.find('.topbar-actions .ghost-button').text()).toContain('Sair');
+    expect(wrapper.find('button[aria-controls="password-change-panel"]').text()).toContain(
+      'Alterar senha',
+    );
+    expect(wrapper.findAll('.topbar-actions .ghost-button').at(1).text()).toContain('Sair');
   });
 
   it('exibe a lista ordenada pelo registro mais recente quando a API fornece data', async () => {
@@ -113,13 +127,14 @@ describe('ContactsView', () => {
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('ana@email.com');
     await inputs[2].setValue('81997236704');
-    await inputs[3].setValue('User@123456');
 
+    expect(inputs).toHaveLength(3);
     expect(inputs[0].attributes('maxlength')).toBe('50');
     expect(inputs[1].attributes('maxlength')).toBe('40');
     expect(inputs[2].attributes('maxlength')).toBe('19');
     expect(inputs[2].element.value).toBe('+55 (81) 99723-6704');
     expect(wrapper.text()).toContain('11/11 números');
+    expect(wrapper.find('input[autocomplete="new-password"]').exists()).toBe(false);
 
     await wrapper.find('form.contact-form').trigger('submit.prevent');
     await flushPromises();
@@ -129,7 +144,7 @@ describe('ContactsView', () => {
         name: 'Ana Silva',
         email: 'ana@email.com',
         phone: '+5581997236704',
-        password: 'User@123456',
+        password: 'Admin@123456',
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
@@ -137,23 +152,50 @@ describe('ContactsView', () => {
     expect(wrapper.text()).toContain('+55 (81) 99723-6704');
   });
 
-  it('exibe a força da senha enquanto cadastra um contato', async () => {
+  it('altera a senha apenas do usuário logado pelo painel de conta', async () => {
     const wrapper = mountContactsView();
     await flushPromises();
 
-    const inputs = wrapper.findAll('.contact-form input');
-    await inputs[3].setValue('abc');
+    await wrapper.find('button[aria-controls="password-change-panel"]').trigger('click');
 
-    expect(wrapper.find('.password-strength').exists()).toBe(true);
-    expect(wrapper.find('.password-strength').classes()).toContain('password-strength--very-weak');
-    expect(wrapper.find('.password-strength-track').attributes('aria-valuenow')).toBe('20');
-    expect(wrapper.text()).toContain('Força da senha: Muito fraca');
+    const passwordPanel = wrapper.find('#password-change-panel');
+    const inputs = passwordPanel.findAll('input');
 
-    await inputs[3].setValue('User@12345678');
+    await inputs[0].setValue('Admin@123456');
+    await inputs[1].setValue('User@12345678');
+    await inputs[2].setValue('User@12345678');
 
-    expect(wrapper.find('.password-strength').classes()).toContain('password-strength--very-strong');
-    expect(wrapper.find('.password-strength-track').attributes('aria-valuenow')).toBe('100');
-    expect(wrapper.text()).toContain('Força da senha: Muito forte');
+    expect(passwordPanel.find('.password-strength').classes()).toContain(
+      'password-strength--very-strong',
+    );
+    expect(passwordPanel.text()).toContain('Força da senha: Muito forte');
+
+    await passwordPanel.trigger('submit.prevent');
+    await flushPromises();
+
+    expect(authApiMock.changeOwnPassword).toHaveBeenCalledWith({
+      currentPassword: 'Admin@123456',
+      newPassword: 'User@12345678',
+    });
+    expect(wrapper.text()).toContain('Senha alterada.');
+  });
+
+  it('impede trocar a senha quando a confirmação não confere', async () => {
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    await wrapper.find('button[aria-controls="password-change-panel"]').trigger('click');
+
+    const passwordPanel = wrapper.find('#password-change-panel');
+    const inputs = passwordPanel.findAll('input');
+
+    await inputs[0].setValue('Admin@123456');
+    await inputs[1].setValue('User@12345678');
+    await inputs[2].setValue('User@123456');
+    await passwordPanel.trigger('submit.prevent');
+
+    expect(authApiMock.changeOwnPassword).not.toHaveBeenCalled();
+    expect(wrapper.text()).toContain('As senhas não conferem.');
   });
 
   it('preenche o formulário ao editar e envia a alteração do contato', async () => {
@@ -214,7 +256,7 @@ describe('ContactsView', () => {
     expect(wrapper.text()).toContain('Informe o nome.');
     expect(wrapper.text()).toContain('Informe o e-mail.');
     expect(wrapper.text()).toContain('Informe o telefone.');
-    expect(wrapper.text()).toContain('Informe a senha.');
+    expect(wrapper.text()).not.toContain('Informe a senha.');
   });
 
   it('valida formato de e-mail e telefone incompleto', async () => {
@@ -225,7 +267,6 @@ describe('ContactsView', () => {
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('email-invalido');
     await inputs[2].setValue('119999');
-    await inputs[3].setValue('User@123456');
     await wrapper.find('form.contact-form').trigger('submit.prevent');
 
     expect(contactsApiMock.create).not.toHaveBeenCalled();

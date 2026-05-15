@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  calculatePasswordStrength,
+  DEFAULT_CONTACT_PASSWORD,
   formatBrazilianMobilePhone,
   isValidBrazilianMobilePhone,
   isValidEmail,
@@ -9,6 +9,10 @@ import {
 } from '../contactsStore';
 
 describe('contactsStore validators', () => {
+  it('mantem a senha default usada no cadastro de contatos', () => {
+    expect(DEFAULT_CONTACT_PASSWORD).toBe('Admin@123456');
+  });
+
   it('valida formato de e-mail', () => {
     expect(isValidEmail('ana@email.com')).toBe(true);
     expect(isValidEmail('ana.silva+teste@sub.email.com.br')).toBe(true);
@@ -30,14 +34,6 @@ describe('contactsStore validators', () => {
   it('remove máscara e gera telefone no formato +xxxxxxxxxxxxx para payload', () => {
     expect(toBrazilianE164Phone('+55 (81) 99723-6704')).toBe('+5581997236704');
     expect(toBrazilianE164Phone('81997236704')).toBe('+5581997236704');
-  });
-
-  it('calcula a força da senha do cadastro', () => {
-    expect(calculatePasswordStrength('').level).toBe('empty');
-    expect(calculatePasswordStrength('abc').level).toBe('very-weak');
-    expect(calculatePasswordStrength('abc12345').level).toBe('weak');
-    expect(calculatePasswordStrength('User@123456').level).toBe('strong');
-    expect(calculatePasswordStrength('User@12345678').level).toBe('very-strong');
   });
 
   it('ordena contatos por data de criação mais recente quando disponível', () => {

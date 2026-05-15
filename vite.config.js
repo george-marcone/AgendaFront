@@ -7,7 +7,8 @@ export default defineConfig(({ mode }) => {
   const apiBaseUrl = env.VITE_API_BASE_URL || '/api';
   const apiProxyPath = apiBaseUrl.startsWith('/') ? apiBaseUrl.replace(/\/$/, '') : '/api';
   const frontendPort = Number(env.VITE_FRONTEND_PORT) || 5173;
-  const coreFlowLocalTarget =
+  const coreFlowDevTarget =
+    env.VITE_CORE_FLOW_DEV_TARGET ||
     env.VITE_CORE_FLOW_LOCAL_TARGET || env.VITE_CORE_FLOW_TARGET || 'http://localhost:5062';
 
   return {
@@ -20,7 +21,7 @@ export default defineConfig(({ mode }) => {
       port: frontendPort,
       proxy: {
         [apiProxyPath]: {
-          target: coreFlowLocalTarget,
+          target: coreFlowDevTarget,
           changeOrigin: true,
           secure: false,
         },

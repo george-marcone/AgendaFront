@@ -51,14 +51,22 @@ Variáveis do front:
 ```env
 VITE_API_BASE_URL=/api
 VITE_FRONTEND_PORT=5173
+
+# Backend targets for local frontend development.
 VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5062
+VITE_CORE_FLOW_DOCKER_HOST_TARGET=http://localhost:5088
+
+# Active target used by the Vite dev proxy.
+VITE_CORE_FLOW_DEV_TARGET=http://localhost:5088
+
+# Target used by the frontend container/Nginx proxy.
 VITE_CORE_FLOW_DOCKER_TARGET=http://host.docker.internal:5088
 ```
 
 Cenários comuns:
 
-- Front local + API local via `dotnet run`: deixe `VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5062`.
-- Front local + API em Docker: use `VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5088`.
+- Front local + API local via `dotnet run`: use `VITE_CORE_FLOW_DEV_TARGET=http://localhost:5062`.
+- Front local + API em Docker: use `VITE_CORE_FLOW_DEV_TARGET=http://localhost:5088`.
 - Front em Docker + API em Docker publicada no host: use `VITE_CORE_FLOW_DOCKER_TARGET=http://host.docker.internal:5088`.
 - Front e API no mesmo `docker-compose`/network: use `VITE_CORE_FLOW_DOCKER_TARGET=http://coreflow_api:8080`.
 

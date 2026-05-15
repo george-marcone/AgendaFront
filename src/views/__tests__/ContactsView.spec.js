@@ -47,14 +47,16 @@ describe('ContactsView', () => {
   it('cadastra um contato pelo formulário usando a store do Pinia', async () => {
     contactsApiMock.list
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        {
-          id: 'contact-1',
-          name: 'Ana Silva',
-          email: 'ana@email.com',
-          phone: '11999990000',
-        },
-      ]);
+      .mockResolvedValueOnce({
+        value: [
+          {
+            id: 'contact-1',
+            name: 'Ana Silva',
+            email: 'ana@email.com',
+            phone: '+55 (11) 99999-0000',
+          },
+        ],
+      });
 
     const wrapper = mountContactsView();
     await flushPromises();
@@ -63,6 +65,9 @@ describe('ContactsView', () => {
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('ana@email.com');
     await inputs[2].setValue('11999990000');
+
+    expect(inputs[2].element.value).toBe('+55 (11) 99999-0000');
+
     await wrapper.find('form.contact-form').trigger('submit.prevent');
     await flushPromises();
 
@@ -70,7 +75,7 @@ describe('ContactsView', () => {
       expect.objectContaining({
         name: 'Ana Silva',
         email: 'ana@email.com',
-        phone: '11999990000',
+        phone: '+55 (11) 99999-0000',
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
@@ -84,7 +89,7 @@ describe('ContactsView', () => {
           id: 'contact-1',
           name: 'George Marcone',
           email: 'george@email.com',
-          phone: '1100000000',
+          phone: '+55 (11) 90000-0000',
         },
       ])
       .mockResolvedValueOnce([
@@ -92,7 +97,7 @@ describe('ContactsView', () => {
           id: 'contact-1',
           name: 'George Marcone',
           email: 'george@email.com',
-          phone: '11988887777',
+          phone: '+55 (11) 98888-7777',
         },
       ]);
 
@@ -106,6 +111,9 @@ describe('ContactsView', () => {
     expect(inputs[1].element.value).toBe('george@email.com');
 
     await inputs[2].setValue('11988887777');
+
+    expect(inputs[2].element.value).toBe('+55 (11) 98888-7777');
+
     await wrapper.find('form.contact-form').trigger('submit.prevent');
     await flushPromises();
 
@@ -114,10 +122,52 @@ describe('ContactsView', () => {
         id: 'contact-1',
         name: 'George Marcone',
         email: 'george@email.com',
-        phone: '11988887777',
+        phone: '+55 (11) 98888-7777',
       }),
     );
     expect(wrapper.text()).toContain('Contato atualizado.');
-    expect(wrapper.text()).toContain('11988887777');
+    expect(wrapper.text()).toContain('+55 (11) 98888-7777');
+  });
+
+  it('valida campos obrigatórios antes de enviar o cadastro', async () => {
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    await wrapper.find('form.contact-form').trigger('submit.prevent');
+
+    expect(contactsApiMock.create).not.toHaveBeenCalled();
+    expect(wrapper.text()).toContain('Revise os campos obrigatórios.');
+    expect(wrapper.text()).toContain('Informe o nome.');
+    expect(wrapper.text()).toContain('Informe o e-mail.');
+    expect(wrapper.text()).toContain('Informe o telefone.');
+  });
+
+  it('valida formato de e-mail e telefone incompleto', async () => {
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    const inputs = wrapper.findAll('.contact-form input');
+    await inputs[0].setValue('Ana Silva');
+    await inputs[1].setValue('email-invalido');
+    await inputs[2].setValue('119999');
+    await wrapper.find('form.contact-form').trigger('submit.prevent');
+
+    expect(contactsApiMock.create).not.toHaveBeenCalled();
+    expect(wrapper.text()).toContain('Informe um e-mail válido.');
+    expect(wrapper.text()).toContain('Informe o telefone no formato +55 (xx) xxxxx-xxxx.');
+  });
+
+  it('valida formato de e-mail e telefone ao sair dos campos', async () => {
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    const inputs = wrapper.findAll('.contact-form input');
+    await inputs[1].setValue('ana@email');
+    await inputs[1].trigger('blur');
+    await inputs[2].setValue('119999');
+    await inputs[2].trigger('blur');
+
+    expect(wrapper.text()).toContain('Informe um e-mail válido.');
+    expect(wrapper.text()).toContain('Informe o telefone no formato +55 (xx) xxxxx-xxxx.');
   });
 });

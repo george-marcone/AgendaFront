@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia';
 import { contactsApi } from '../services/contactsApi';
 
+const EMAIL_PATTERN =
+  /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
+const BRAZILIAN_MOBILE_PHONE_PATTERN = /^\+55 \(\d{2}\) \d{5}-\d{4}$/;
+
 export function createEmptyContactForm() {
   return {
     id: '',
@@ -10,10 +14,85 @@ export function createEmptyContactForm() {
   };
 }
 
+export function createEmptyContactFieldErrors() {
+  return {
+    name: '',
+    email: '',
+    phone: '',
+  };
+}
+
+export function getBrazilianMobileDigits(value = '') {
+  const digits = String(value).replace(/\D/g, '');
+  const withoutCountryCode = digits.startsWith('55') && digits.length > 11 ? digits.slice(2) : digits;
+
+  return withoutCountryCode.slice(0, 11);
+}
+
+export function formatBrazilianMobilePhone(value = '') {
+  const digits = getBrazilianMobileDigits(value);
+
+  if (!digits) {
+    return '';
+  }
+
+  const areaCode = digits.slice(0, 2);
+  const firstPart = digits.slice(2, 7);
+  const secondPart = digits.slice(7, 11);
+  let formatted = '+55';
+
+  if (areaCode) {
+    formatted += ` (${areaCode}`;
+  }
+
+  if (areaCode.length === 2) {
+    formatted += ')';
+  }
+
+  if (firstPart) {
+    formatted += ` ${firstPart}`;
+  }
+
+  if (secondPart) {
+    formatted += `-${secondPart}`;
+  }
+
+  return formatted;
+}
+
+export function isValidEmail(value = '') {
+  return EMAIL_PATTERN.test(value.trim());
+}
+
+export function isValidBrazilianMobilePhone(value = '') {
+  return BRAZILIAN_MOBILE_PHONE_PATTERN.test(formatBrazilianMobilePhone(value));
+}
+
+export function normalizeContactsResponse(response) {
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  if (Array.isArray(response?.value)) {
+    return response.value;
+  }
+
+  if (Array.isArray(response?.items)) {
+    return response.items;
+  }
+
+  if (Array.isArray(response?.data)) {
+    return response.data;
+  }
+
+  return [];
+}
+
 export const useContactsStore = defineStore('contacts', {
   state: () => ({
     contacts: [],
     form: createEmptyContactForm(),
+    fieldErrors: createEmptyContactFieldErrors(),
     searchTerm: '',
     selectedContact: null,
     loading: false,
@@ -53,8 +132,64 @@ export const useContactsStore = defineStore('contacts', {
       this.successMessage = '';
     },
 
+    clearFieldErrors() {
+      this.fieldErrors = createEmptyContactFieldErrors();
+    },
+
     resetForm() {
       this.form = createEmptyContactForm();
+      this.clearFieldErrors();
+    },
+
+    setPhone(value) {
+      this.form.phone = formatBrazilianMobilePhone(value);
+      this.fieldErrors.phone = '';
+    },
+
+    validateNameField() {
+      this.fieldErrors.name = this.form.name.trim() ? '' : 'Informe o nome.';
+      return !this.fieldErrors.name;
+    },
+
+    validateEmailField() {
+      const email = this.form.email.trim();
+
+      if (!email) {
+        this.fieldErrors.email = 'Informe o e-mail.';
+      } else if (!isValidEmail(email)) {
+        this.fieldErrors.email = 'Informe um e-mail válido.';
+      } else {
+        this.fieldErrors.email = '';
+      }
+
+      return !this.fieldErrors.email;
+    },
+
+    validatePhoneField() {
+      if (!this.form.phone.trim()) {
+        this.fieldErrors.phone = 'Informe o telefone.';
+      } else if (!isValidBrazilianMobilePhone(this.form.phone)) {
+        this.fieldErrors.phone = 'Informe o telefone no formato +55 (xx) xxxxx-xxxx.';
+      } else {
+        this.fieldErrors.phone = '';
+      }
+
+      return !this.fieldErrors.phone;
+    },
+
+    validateContactForm() {
+      this.clearFieldErrors();
+      const isValid = [
+        this.validateNameField(),
+        this.validateEmailField(),
+        this.validatePhoneField(),
+      ].every(Boolean);
+
+      if (!isValid) {
+        this.errorMessage = 'Revise os campos obrigatórios.';
+      }
+
+      return isValid;
     },
 
     async loadContacts({ keepFeedback = false } = {}) {
@@ -66,7 +201,7 @@ export const useContactsStore = defineStore('contacts', {
 
       try {
         const response = await contactsApi.list();
-        this.contacts = Array.isArray(response) ? response : [];
+        this.contacts = normalizeContactsResponse(response);
       } catch (error) {
         this.setError(error);
       } finally {
@@ -76,8 +211,12 @@ export const useContactsStore = defineStore('contacts', {
 
     editContact(contact) {
       this.clearFeedback();
+      this.clearFieldErrors();
       this.selectedContact = null;
-      this.form = { ...contact };
+      this.form = {
+        ...contact,
+        phone: formatBrazilianMobilePhone(contact.phone),
+      };
     },
 
     async consultContact(contact) {
@@ -94,8 +233,14 @@ export const useContactsStore = defineStore('contacts', {
     },
 
     async saveContact() {
-      this.saving = true;
       this.clearFeedback();
+
+      if (!this.validateContactForm()) {
+        return;
+      }
+
+      this.form.phone = formatBrazilianMobilePhone(this.form.phone);
+      this.saving = true;
 
       try {
         if (this.isEditing) {

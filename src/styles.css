@@ -143,6 +143,16 @@ h3 {
     box-shadow 0.2s ease;
 }
 
+.field input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
+}
+
+.field-error {
+  @apply text-sm font-bold;
+  color: var(--danger);
+}
+
 .field input:focus,
 .search-row input:focus {
   border-color: var(--primary);

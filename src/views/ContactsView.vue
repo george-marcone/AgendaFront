@@ -24,6 +24,7 @@ const contactsStore = useContactsStore();
 const {
   contacts,
   form,
+  fieldErrors,
   searchTerm,
   selectedContact,
   loading,
@@ -35,7 +36,17 @@ const {
   isEditing,
   filteredContacts,
 } = storeToRefs(contactsStore);
-const { loadContacts, resetForm, editContact, consultContact, saveContact } = contactsStore;
+const {
+  loadContacts,
+  resetForm,
+  editContact,
+  consultContact,
+  saveContact,
+  setPhone,
+  validateNameField,
+  validateEmailField,
+  validatePhoneField,
+} = contactsStore;
 
 async function deleteContact(contact) {
   const confirmed = window.confirm(`Excluir ${contact.name}?`);
@@ -70,7 +81,7 @@ onMounted(() => contactsStore.loadContacts());
     </header>
 
     <section class="agenda-grid">
-      <form class="panel contact-form" @submit.prevent="saveContact">
+      <form class="panel contact-form" novalidate @submit.prevent="saveContact">
         <div class="panel-heading">
           <div>
             <span class="eyebrow">{{ isEditing ? 'Edição' : 'Cadastro' }}</span>
@@ -91,17 +102,57 @@ onMounted(() => contactsStore.loadContacts());
 
         <label class="field">
           <span>Nome</span>
-          <input v-model="form.name" type="text" autocomplete="name" required />
+          <input
+            v-model="form.name"
+            type="text"
+            autocomplete="name"
+            required
+            :aria-invalid="Boolean(fieldErrors.name)"
+            aria-describedby="name-error"
+            @input="fieldErrors.name = ''"
+            @blur="validateNameField"
+          />
+          <small v-if="fieldErrors.name" id="name-error" class="field-error">
+            {{ fieldErrors.name }}
+          </small>
         </label>
 
         <label class="field">
           <span>E-mail</span>
-          <input v-model="form.email" type="email" autocomplete="email" required />
+          <input
+            v-model="form.email"
+            type="email"
+            autocomplete="email"
+            required
+            pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$"
+            :aria-invalid="Boolean(fieldErrors.email)"
+            aria-describedby="email-error"
+            @input="fieldErrors.email = ''"
+            @blur="validateEmailField"
+          />
+          <small v-if="fieldErrors.email" id="email-error" class="field-error">
+            {{ fieldErrors.email }}
+          </small>
         </label>
 
         <label class="field">
           <span>Telefone</span>
-          <input v-model="form.phone" type="tel" autocomplete="tel" required />
+          <input
+            :value="form.phone"
+            type="tel"
+            autocomplete="tel"
+            inputmode="numeric"
+            placeholder="+55 (11) 99999-9999"
+            pattern="^\+55 \([0-9]{2}\) [0-9]{5}-[0-9]{4}$"
+            required
+            :aria-invalid="Boolean(fieldErrors.phone)"
+            aria-describedby="phone-error"
+            @input="setPhone($event.target.value)"
+            @blur="validatePhoneField"
+          />
+          <small v-if="fieldErrors.phone" id="phone-error" class="field-error">
+            {{ fieldErrors.phone }}
+          </small>
         </label>
 
         <button type="submit" class="primary-action" :disabled="saving">

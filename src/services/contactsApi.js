@@ -9,10 +9,18 @@ async function request(path = '', options = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${userEndpoint}${path}`, {
-    ...options,
-    headers,
-  });
+  let response;
+
+  try {
+    response = await fetch(`${userEndpoint}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    throw new Error(
+      `Não foi possível conectar à API em ${userEndpoint}${path}. Verifique se o CoreFlow está rodando e se o proxy do front aponta para a porta correta.`,
+    );
+  }
 
   if (response.status === 204) {
     return null;

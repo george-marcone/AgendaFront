@@ -382,8 +382,9 @@ h3 {
 }
 
 .table-wrap {
-  @apply w-full overflow-x-auto rounded-lg;
+  @apply w-full overflow-auto rounded-lg;
   border: 1px solid var(--line);
+  max-height: min(58vh, 620px);
 }
 
 table {
@@ -417,6 +418,9 @@ th {
   background: #f8fafc;
   color: var(--muted);
   font-size: 0.78rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 td {
@@ -435,6 +439,21 @@ tbody tr:last-child td {
 
 .actions-cell {
   width: 140px;
+}
+
+.pagination-bar {
+  @apply mt-3.5 flex flex-wrap items-center justify-between gap-3;
+  color: var(--muted);
+}
+
+.pagination-bar p,
+.pagination-actions span {
+  @apply mb-0 font-extrabold;
+  font-size: 0.86rem;
+}
+
+.pagination-actions {
+  @apply flex items-center gap-2;
 }
 
 .details-panel {
@@ -540,6 +559,14 @@ tbody tr:last-child td {
   .details-panel dl {
     width: 100%;
     grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    @apply flex-col items-start;
+  }
+
+  .pagination-actions {
+    @apply w-full justify-between;
   }
 
   table,

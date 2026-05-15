@@ -106,6 +106,40 @@ describe('ContactsView', () => {
     expect(rows[1].text()).toContain('Contato Antigo');
   });
 
+  it('pagina a lista exibindo 10 contatos por vez', async () => {
+    contactsApiMock.list.mockResolvedValueOnce(
+      Array.from({ length: 12 }, (_, index) => {
+        const number = index + 1;
+
+        return {
+          id: `contact-${number}`,
+          name: `Contato ${String(number).padStart(2, '0')}`,
+          email: `contato${number}@email.com`,
+          phone: `+55119000000${String(number).padStart(2, '0')}`,
+        };
+      }),
+    );
+
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    let rows = wrapper.findAll('tbody tr');
+    expect(rows).toHaveLength(10);
+    expect(rows[0].text()).toContain('Contato 01');
+    expect(rows[9].text()).toContain('Contato 10');
+    expect(wrapper.text()).toContain('1-10 de 12 contato(s)');
+    expect(wrapper.text()).toContain('Página 1 de 2');
+
+    await wrapper.find('button[aria-label="Próxima página"]').trigger('click');
+
+    rows = wrapper.findAll('tbody tr');
+    expect(rows).toHaveLength(2);
+    expect(rows[0].text()).toContain('Contato 11');
+    expect(rows[1].text()).toContain('Contato 12');
+    expect(wrapper.text()).toContain('11-12 de 12 contato(s)');
+    expect(wrapper.text()).toContain('Página 2 de 2');
+  });
+
   it('cadastra um contato pelo formulário usando a store do Pinia', async () => {
     contactsApiMock.list
       .mockResolvedValueOnce([])

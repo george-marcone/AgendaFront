@@ -17,6 +17,7 @@ export const NAME_MAX_LENGTH = 50;
 export const EMAIL_MAX_LENGTH = 40;
 export const PHONE_LOCAL_DIGIT_LENGTH = 11;
 export const DEFAULT_CONTACT_PASSWORD = 'Admin@123456';
+export const CONTACTS_PER_PAGE = 10;
 
 function getStorage() {
   return typeof localStorage === 'undefined' ? null : localStorage;
@@ -173,6 +174,7 @@ export const useContactsStore = defineStore('contacts', {
     form: createEmptyContactForm(),
     fieldErrors: createEmptyContactFieldErrors(),
     searchTerm: '',
+    currentPage: 1,
     selectedContact: null,
     loading: false,
     saving: false,
@@ -197,6 +199,32 @@ export const useContactsStore = defineStore('contacts', {
           .filter(Boolean)
           .some((value) => value.toLowerCase().includes(term));
       });
+    },
+
+    totalFilteredContacts() {
+      return this.filteredContacts.length;
+    },
+
+    totalPages() {
+      return Math.max(1, Math.ceil(this.totalFilteredContacts / CONTACTS_PER_PAGE));
+    },
+
+    paginatedContacts(state) {
+      const startIndex = (state.currentPage - 1) * CONTACTS_PER_PAGE;
+
+      return this.filteredContacts.slice(startIndex, startIndex + CONTACTS_PER_PAGE);
+    },
+
+    paginationStart(state) {
+      if (!this.totalFilteredContacts) {
+        return 0;
+      }
+
+      return (state.currentPage - 1) * CONTACTS_PER_PAGE + 1;
+    },
+
+    paginationEnd(state) {
+      return Math.min(state.currentPage * CONTACTS_PER_PAGE, this.totalFilteredContacts);
     },
 
     phoneDigitsCount: (state) => getBrazilianMobileDigits(state.form.phone).length,
@@ -230,6 +258,26 @@ export const useContactsStore = defineStore('contacts', {
       this.recentContactIds = [id, ...this.recentContactIds.filter((contactId) => contactId !== id)];
       saveRecentContactIds(this.recentContactIds);
       this.contacts = sortContactsByMostRecent(this.contacts, this.recentContactIds);
+    },
+
+    setSearchTerm(value) {
+      this.searchTerm = value;
+      this.currentPage = 1;
+    },
+
+    setCurrentPage(page) {
+      const pageNumber = Number(page);
+      const normalizedPage = Number.isFinite(pageNumber) ? Math.trunc(pageNumber) : 1;
+
+      this.currentPage = Math.min(Math.max(normalizedPage, 1), this.totalPages);
+    },
+
+    nextPage() {
+      this.setCurrentPage(this.currentPage + 1);
+    },
+
+    previousPage() {
+      this.setCurrentPage(this.currentPage - 1);
     },
 
     setPhone(value) {
@@ -308,6 +356,7 @@ export const useContactsStore = defineStore('contacts', {
           normalizeContactsResponse(response),
           this.recentContactIds,
         );
+        this.setCurrentPage(this.currentPage);
       } catch (error) {
         this.setError(error);
       } finally {
@@ -374,6 +423,7 @@ export const useContactsStore = defineStore('contacts', {
             return contact.email === payload.email && contact.phone === payload.phone;
           });
           this.promoteRecentContact(createdContact?.id);
+          this.setCurrentPage(1);
         }
       } catch (error) {
         this.setError(error);

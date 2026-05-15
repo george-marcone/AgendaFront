@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   Eye,
   EyeOff,
@@ -59,6 +61,12 @@ const {
   successMessage,
   isEditing,
   filteredContacts,
+  paginatedContacts,
+  currentPage,
+  totalPages,
+  totalFilteredContacts,
+  paginationStart,
+  paginationEnd,
   phoneDigitsCount,
 } = storeToRefs(contactsStore);
 const {
@@ -68,6 +76,9 @@ const {
   consultContact,
   saveContact,
   setPhone,
+  setSearchTerm,
+  nextPage,
+  previousPage,
   validateNameField,
   validateEmailField,
   validatePhoneField,
@@ -471,7 +482,12 @@ onMounted(() => contactsStore.loadContacts());
 
         <div class="search-row">
           <Search :size="18" aria-hidden="true" />
-          <input v-model="searchTerm" type="search" placeholder="Consultar contato" />
+          <input
+            :value="searchTerm"
+            type="search"
+            placeholder="Consultar contato"
+            @input="setSearchTerm($event.target.value)"
+          />
         </div>
 
         <p v-if="errorMessage" class="feedback error" role="alert">
@@ -508,7 +524,7 @@ onMounted(() => contactsStore.loadContacts());
               </tr>
             </thead>
             <tbody>
-              <tr v-for="contact in filteredContacts" :key="contact.id">
+              <tr v-for="contact in paginatedContacts" :key="contact.id">
                 <td data-label="Nome">{{ contact.name }}</td>
                 <td data-label="E-mail">{{ contact.email }}</td>
                 <td data-label="Telefone">{{ formatBrazilianMobilePhone(contact.phone) }}</td>
@@ -550,6 +566,42 @@ onMounted(() => contactsStore.loadContacts());
             </tbody>
           </table>
         </div>
+
+        <nav
+          v-if="filteredContacts.length > 0"
+          class="pagination-bar"
+          aria-label="Paginação de contatos"
+        >
+          <p>
+            {{ paginationStart }}-{{ paginationEnd }} de {{ totalFilteredContacts }} contato(s)
+          </p>
+
+          <div class="pagination-actions">
+            <button
+              type="button"
+              class="icon-button"
+              aria-label="Página anterior"
+              title="Página anterior"
+              :disabled="currentPage === 1"
+              @click="previousPage"
+            >
+              <ChevronLeft :size="18" />
+            </button>
+
+            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+
+            <button
+              type="button"
+              class="icon-button"
+              aria-label="Próxima página"
+              title="Próxima página"
+              :disabled="currentPage === totalPages"
+              @click="nextPage"
+            >
+              <ChevronRight :size="18" />
+            </button>
+          </div>
+        </nav>
 
         <aside v-if="selectedContact" class="details-panel" aria-label="Contato consultado">
           <div>

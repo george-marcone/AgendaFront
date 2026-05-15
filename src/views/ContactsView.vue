@@ -346,13 +346,17 @@ onMounted(() => contactsStore.loadContacts());
             {{ passwordErrors.confirmPassword }}
           </small>
         </label>
-      </div>
 
-      <button type="submit" class="primary-action password-change-action" :disabled="authStore.changingPassword">
-        <LoaderCircle v-if="authStore.changingPassword" class="spin" :size="18" />
-        <KeyRound v-else :size="18" />
-        Salvar senha
-      </button>
+        <button
+          type="submit"
+          class="primary-action password-change-action"
+          :disabled="authStore.changingPassword"
+        >
+          <LoaderCircle v-if="authStore.changingPassword" class="spin" :size="18" />
+          <KeyRound v-else :size="18" />
+          Salvar senha
+        </button>
+      </div>
     </form>
 
     <section class="agenda-grid">
@@ -489,6 +493,12 @@ onMounted(() => contactsStore.loadContacts());
 
         <div v-else class="table-wrap">
           <table>
+            <colgroup>
+              <col class="name-column" />
+              <col class="email-column" />
+              <col class="phone-column" />
+              <col class="actions-column" />
+            </colgroup>
             <thead>
               <tr>
                 <th>Nome</th>
@@ -502,37 +512,39 @@ onMounted(() => contactsStore.loadContacts());
                 <td data-label="Nome">{{ contact.name }}</td>
                 <td data-label="E-mail">{{ contact.email }}</td>
                 <td data-label="Telefone">{{ formatBrazilianMobilePhone(contact.phone) }}</td>
-                <td class="row-actions" data-label="Ações">
-                  <button
-                    type="button"
-                    class="icon-button"
-                    aria-label="Consultar contato"
-                    title="Consultar contato"
-                    :disabled="consulting"
-                    @click="consultContact(contact)"
-                  >
-                    <Eye :size="17" />
-                  </button>
-                  <button
-                    type="button"
-                    class="icon-button"
-                    aria-label="Editar contato"
-                    title="Editar contato"
-                    @click="editContact(contact)"
-                  >
-                    <Pencil :size="17" />
-                  </button>
-                  <button
-                    type="button"
-                    class="icon-button danger"
-                    aria-label="Excluir contato"
-                    title="Excluir contato"
-                    :disabled="deletingId === contact.id"
-                    @click="deleteContact(contact)"
-                  >
-                    <LoaderCircle v-if="deletingId === contact.id" class="spin" :size="17" />
-                    <Trash2 v-else :size="17" />
-                  </button>
+                <td class="actions-cell" data-label="Ações">
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="icon-button"
+                      aria-label="Consultar contato"
+                      title="Consultar contato"
+                      :disabled="consulting"
+                      @click="consultContact(contact)"
+                    >
+                      <Eye :size="17" />
+                    </button>
+                    <button
+                      type="button"
+                      class="icon-button"
+                      aria-label="Editar contato"
+                      title="Editar contato"
+                      @click="editContact(contact)"
+                    >
+                      <Pencil :size="17" />
+                    </button>
+                    <button
+                      type="button"
+                      class="icon-button danger"
+                      aria-label="Excluir contato"
+                      title="Excluir contato"
+                      :disabled="deletingId === contact.id"
+                      @click="deleteContact(contact)"
+                    >
+                      <LoaderCircle v-if="deletingId === contact.id" class="spin" :size="17" />
+                      <Trash2 v-else :size="17" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

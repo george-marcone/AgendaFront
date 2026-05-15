@@ -73,7 +73,6 @@ button:disabled {
 .auth-brand,
 .topbar,
 .panel-heading,
-.row-actions,
 .details-panel {
   @apply flex items-center;
 }
@@ -131,6 +130,7 @@ h3 {
   @apply grid gap-2 font-bold;
   color: var(--ink);
   font-size: 0.92rem;
+  min-width: 0;
 }
 
 .field input,
@@ -156,6 +156,7 @@ h3 {
 .field-hint {
   @apply text-xs font-bold;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .password-strength {
@@ -293,7 +294,7 @@ h3 {
 }
 
 .topbar {
-  @apply mx-auto mb-[22px] w-full max-w-[1180px] justify-between gap-4;
+  @apply mx-auto mb-[22px] w-full max-w-[1240px] justify-between gap-4;
 }
 
 .topbar-actions {
@@ -312,25 +313,31 @@ h3 {
 }
 
 .agenda-grid {
-  @apply mx-auto grid w-full max-w-[1180px] items-start gap-[18px];
-  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+  @apply mx-auto grid w-full max-w-[1240px] items-start gap-[18px];
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
 }
 
 .panel {
   @apply p-[22px];
 }
 
+.contact-list {
+  min-width: 0;
+}
+
 .password-change-panel {
-  @apply mx-auto mb-[18px] w-full max-w-[1180px];
+  @apply mx-auto mb-[18px] w-full max-w-[1240px];
 }
 
 .password-change-grid {
-  @apply grid gap-[18px];
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  @apply grid gap-[18px] items-start;
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.1fr) minmax(200px, 1fr) auto;
 }
 
 .password-change-action {
-  @apply mt-[18px];
+  @apply whitespace-nowrap;
+  align-self: start;
+  margin-top: 29px;
 }
 
 .panel-heading {
@@ -375,12 +382,28 @@ h3 {
 }
 
 .table-wrap {
-  @apply overflow-x-auto rounded-lg;
+  @apply w-full overflow-x-auto rounded-lg;
   border: 1px solid var(--line);
 }
 
 table {
-  @apply w-full min-w-[680px] border-collapse;
+  @apply w-full min-w-[760px] table-fixed border-collapse;
+}
+
+.name-column {
+  width: 30%;
+}
+
+.email-column {
+  width: 28%;
+}
+
+.phone-column {
+  width: 22%;
+}
+
+.actions-column {
+  width: 140px;
 }
 
 th,
@@ -398,18 +421,20 @@ th {
 
 td {
   color: var(--ink);
+  overflow-wrap: anywhere;
 }
 
 tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.actions-column {
-  width: 148px;
+.row-actions {
+  @apply flex items-center justify-end gap-2;
+  min-width: 122px;
 }
 
-.row-actions {
-  @apply justify-end gap-2;
+.actions-cell {
+  width: 140px;
 }
 
 .details-panel {
@@ -446,13 +471,28 @@ tbody tr:last-child td {
   }
 }
 
-@media (max-width: 880px) {
+@media (max-width: 1080px) {
+  .password-change-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .password-change-action {
+    @apply w-full;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 980px) {
   .agenda-grid {
     @apply grid-cols-1;
   }
 
   .contact-form {
     position: static;
+  }
+
+  table {
+    min-width: 0;
   }
 }
 
@@ -492,6 +532,11 @@ tbody tr:last-child td {
     grid-template-columns: 1fr;
   }
 
+  .password-change-action {
+    @apply w-full;
+    margin-top: 0;
+  }
+
   .details-panel dl {
     width: 100%;
     grid-template-columns: 1fr;
@@ -510,6 +555,10 @@ tbody tr:last-child td {
     @apply min-w-0;
   }
 
+  colgroup {
+    display: none;
+  }
+
   thead {
     position: absolute;
     width: 1px;
@@ -523,13 +572,17 @@ tbody tr:last-child td {
     border-bottom: 1px solid var(--line);
   }
 
+  tbody tr {
+    background: var(--surface);
+  }
+
   tr:last-child {
     border-bottom: 0;
   }
 
   td {
     @apply grid gap-2.5 border-b-0 py-2;
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 104px minmax(0, 1fr);
     overflow-wrap: anywhere;
   }
 
@@ -542,6 +595,11 @@ tbody tr:last-child td {
   }
 
   .row-actions {
-    @apply justify-start;
+    @apply flex-wrap justify-start;
+    min-width: 0;
+  }
+
+  .actions-cell {
+    width: 100%;
   }
 }

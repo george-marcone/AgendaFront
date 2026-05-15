@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 import ContactsView from '../views/ContactsView.vue';
-import { authService } from '../services/authService';
+import { pinia } from '../stores';
+import { useAuthStore } from '../stores/authStore';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,7 +26,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const authenticated = authService.isAuthenticated();
+  const authStore = useAuthStore(pinia);
+  const authenticated = authStore.isAuthenticated;
 
   if (to.meta.requiresAuth && !authenticated) {
     return { name: 'login' };

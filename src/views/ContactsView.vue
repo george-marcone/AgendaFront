@@ -1,5 +1,6 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
   ClipboardList,
@@ -14,117 +15,27 @@ import {
   Trash2,
   X,
 } from '@lucide/vue';
-import { authService } from '../services/authService';
-import { contactsApi } from '../services/contactsApi';
+import { useAuthStore } from '../stores/authStore';
+import { useContactsStore } from '../stores/contactsStore';
 
 const router = useRouter();
-const contacts = ref([]);
-const form = ref(createEmptyForm());
-const searchTerm = ref('');
-const selectedContact = ref(null);
-const loading = ref(false);
-const saving = ref(false);
-const consulting = ref(false);
-const deletingId = ref('');
-const errorMessage = ref('');
-const successMessage = ref('');
-
-const isEditing = computed(() => Boolean(form.value.id));
-
-const filteredContacts = computed(() => {
-  const term = searchTerm.value.trim().toLowerCase();
-
-  if (!term) {
-    return contacts.value;
-  }
-
-  return contacts.value.filter((contact) => {
-    return [contact.name, contact.email, contact.phone]
-      .filter(Boolean)
-      .some((value) => value.toLowerCase().includes(term));
-  });
-});
-
-function createEmptyForm() {
-  return {
-    id: '',
-    name: '',
-    email: '',
-    phone: '',
-  };
-}
-
-function setError(error) {
-  errorMessage.value =
-    error instanceof Error ? error.message : 'Não foi possível concluir a ação.';
-}
-
-function clearFeedback() {
-  errorMessage.value = '';
-  successMessage.value = '';
-}
-
-async function loadContacts({ keepFeedback = false } = {}) {
-  loading.value = true;
-
-  if (!keepFeedback) {
-    clearFeedback();
-  }
-
-  try {
-    const response = await contactsApi.list();
-    contacts.value = Array.isArray(response) ? response : [];
-  } catch (error) {
-    setError(error);
-  } finally {
-    loading.value = false;
-  }
-}
-
-function resetForm() {
-  form.value = createEmptyForm();
-}
-
-function editContact(contact) {
-  clearFeedback();
-  selectedContact.value = null;
-  form.value = { ...contact };
-}
-
-async function consultContact(contact) {
-  consulting.value = true;
-  clearFeedback();
-
-  try {
-    selectedContact.value = await contactsApi.getById(contact.id);
-  } catch (error) {
-    setError(error);
-  } finally {
-    consulting.value = false;
-  }
-}
-
-async function saveContact() {
-  saving.value = true;
-  clearFeedback();
-
-  try {
-    if (isEditing.value) {
-      await contactsApi.update(form.value);
-      successMessage.value = 'Contato atualizado.';
-    } else {
-      await contactsApi.create(form.value);
-      successMessage.value = 'Contato cadastrado.';
-    }
-
-    resetForm();
-    await loadContacts({ keepFeedback: true });
-  } catch (error) {
-    setError(error);
-  } finally {
-    saving.value = false;
-  }
-}
+const authStore = useAuthStore();
+const contactsStore = useContactsStore();
+const {
+  contacts,
+  form,
+  searchTerm,
+  selectedContact,
+  loading,
+  saving,
+  consulting,
+  deletingId,
+  errorMessage,
+  successMessage,
+  isEditing,
+  filteredContacts,
+} = storeToRefs(contactsStore);
+const { loadContacts, resetForm, editContact, consultContact, saveContact } = contactsStore;
 
 async function deleteContact(contact) {
   const confirmed = window.confirm(`Excluir ${contact.name}?`);
@@ -133,35 +44,15 @@ async function deleteContact(contact) {
     return;
   }
 
-  deletingId.value = contact.id;
-  clearFeedback();
-
-  try {
-    await contactsApi.remove(contact.id);
-    successMessage.value = 'Contato removido.';
-
-    if (selectedContact.value?.id === contact.id) {
-      selectedContact.value = null;
-    }
-
-    if (form.value.id === contact.id) {
-      resetForm();
-    }
-
-    await loadContacts({ keepFeedback: true });
-  } catch (error) {
-    setError(error);
-  } finally {
-    deletingId.value = '';
-  }
+  await contactsStore.removeContact(contact);
 }
 
 function logout() {
-  authService.logout();
+  authStore.logout();
   router.push({ name: 'login' });
 }
 
-onMounted(loadContacts);
+onMounted(() => contactsStore.loadContacts());
 </script>
 
 <template>

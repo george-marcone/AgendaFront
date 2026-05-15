@@ -1,0 +1,13 @@
+services:
+  agenda-front:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: /api
+    container_name: agenda_front
+    environment:
+      API_PROXY_TARGET: http://host.docker.internal:5088
+    ports:
+      - "5173:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

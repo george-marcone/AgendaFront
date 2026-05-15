@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -23,12 +25,11 @@
 }
 
 * {
-  box-sizing: border-box;
+  @apply box-border;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
+  @apply m-0 min-w-80;
 }
 
 button,
@@ -37,23 +38,20 @@ input {
 }
 
 button {
-  cursor: pointer;
+  @apply cursor-pointer;
 }
 
 button:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
+  @apply cursor-not-allowed opacity-70;
 }
 
 .auth-page,
 .agenda-page {
-  min-height: 100vh;
+  @apply min-h-screen;
 }
 
 .auth-page {
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  @apply grid place-items-center p-6;
   background:
     linear-gradient(135deg, rgba(15, 118, 110, 0.12), transparent 40%),
     linear-gradient(315deg, rgba(194, 65, 12, 0.09), transparent 38%),
@@ -62,15 +60,14 @@ button:disabled {
 
 .auth-card,
 .panel {
+  @apply rounded-lg border bg-white;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
   box-shadow: var(--shadow);
 }
 
 .auth-card {
-  width: min(100%, 430px);
-  padding: 34px;
+  @apply w-full max-w-[430px] p-[34px];
 }
 
 .auth-brand,
@@ -78,60 +75,48 @@ button:disabled {
 .panel-heading,
 .row-actions,
 .details-panel {
-  display: flex;
-  align-items: center;
+  @apply flex items-center;
 }
 
 .auth-brand {
-  gap: 14px;
-  margin-bottom: 28px;
+  @apply mb-7 gap-3.5;
 }
 
 .brand-mark {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border-radius: 8px;
+  @apply grid h-12 w-12 place-items-center rounded-lg text-xl font-extrabold text-white;
   background: var(--primary);
-  color: white;
-  font-size: 1.35rem;
-  font-weight: 800;
 }
 
 .eyebrow {
-  display: block;
-  margin-bottom: 4px;
+  @apply mb-1 block font-extrabold uppercase;
   color: var(--accent);
   font-size: 0.72rem;
-  font-weight: 800;
   letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 h1,
 h2,
 h3,
 p {
-  margin-top: 0;
+  @apply mt-0;
 }
 
 h1 {
-  margin-bottom: 0;
+  @apply mb-0;
   color: var(--ink);
   font-size: clamp(1.65rem, 4vw, 2.2rem);
   line-height: 1.1;
 }
 
 h2 {
-  margin-bottom: 0;
+  @apply mb-0;
   color: var(--ink);
   font-size: 1.18rem;
   line-height: 1.2;
 }
 
 h3 {
-  margin-bottom: 0;
+  @apply mb-0;
   color: var(--ink);
   font-size: 1rem;
   line-height: 1.2;
@@ -139,28 +124,20 @@ h3 {
 
 .login-form,
 .contact-form {
-  display: grid;
-  gap: 18px;
+  @apply grid gap-[18px];
 }
 
 .field {
-  display: grid;
-  gap: 8px;
+  @apply grid gap-2 font-bold;
   color: var(--ink);
   font-size: 0.92rem;
-  font-weight: 700;
 }
 
 .field input,
 .search-row input {
-  width: 100%;
-  min-height: 44px;
+  @apply min-h-11 w-full rounded-lg bg-white px-[13px] outline-none;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
   color: var(--ink);
-  outline: none;
-  padding: 0 13px;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -174,7 +151,7 @@ h3 {
 
 .password-field,
 .search-row {
-  position: relative;
+  @apply relative;
 }
 
 .password-field input {
@@ -191,12 +168,7 @@ h3 {
 .primary-action,
 .ghost-button,
 .icon-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 8px;
-  font-weight: 800;
+  @apply inline-flex items-center justify-center rounded-lg border-0 font-extrabold;
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -204,11 +176,8 @@ h3 {
 }
 
 .primary-action {
-  min-height: 46px;
-  gap: 9px;
-  padding: 0 18px;
+  @apply min-h-[46px] gap-[9px] px-[18px] text-white;
   background: var(--primary);
-  color: #fff;
 }
 
 .primary-action:hover:not(:disabled) {
@@ -217,9 +186,7 @@ h3 {
 }
 
 .ghost-button {
-  min-height: 42px;
-  gap: 8px;
-  padding: 0 14px;
+  @apply min-h-[42px] gap-2 px-3.5;
   background: var(--surface-muted);
   color: var(--primary-dark);
 }
@@ -229,9 +196,7 @@ h3 {
 }
 
 .icon-button {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+  @apply h-[38px] w-[38px] flex-none;
   background: #edf2f7;
   color: var(--ink);
 }
@@ -250,43 +215,32 @@ h3 {
 }
 
 .agenda-page {
-  padding: 28px;
+  @apply p-7;
 }
 
 .topbar {
-  justify-content: space-between;
-  gap: 16px;
-  width: min(1180px, 100%);
-  margin: 0 auto 22px;
+  @apply mx-auto mb-[22px] w-full max-w-[1180px] justify-between gap-4;
 }
 
 .agenda-grid {
-  display: grid;
+  @apply mx-auto grid w-full max-w-[1180px] items-start gap-[18px];
   grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
-  gap: 18px;
-  width: min(1180px, 100%);
-  margin: 0 auto;
-  align-items: start;
 }
 
 .panel {
-  padding: 22px;
+  @apply p-[22px];
 }
 
 .panel-heading {
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
+  @apply mb-[18px] justify-between gap-3.5;
 }
 
 .list-heading {
-  margin-bottom: 14px;
+  @apply mb-3.5;
 }
 
 .search-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 14px;
+  @apply mb-3.5 flex items-center;
   color: var(--muted);
 }
 
@@ -300,10 +254,7 @@ h3 {
 }
 
 .feedback {
-  margin: 0 0 14px;
-  border-radius: 8px;
-  padding: 11px 13px;
-  font-weight: 700;
+  @apply mb-3.5 mt-0 rounded-lg px-[13px] py-[11px] font-bold;
 }
 
 .feedback.error {
@@ -317,40 +268,30 @@ h3 {
 }
 
 .empty-state {
-  display: grid;
-  min-height: 190px;
-  place-items: center;
-  gap: 10px;
+  @apply grid min-h-[190px] place-items-center gap-2.5 text-center font-extrabold;
   color: var(--muted);
-  font-weight: 800;
-  text-align: center;
 }
 
 .table-wrap {
-  overflow-x: auto;
+  @apply overflow-x-auto rounded-lg;
   border: 1px solid var(--line);
-  border-radius: 8px;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 680px;
+  @apply w-full min-w-[680px] border-collapse;
 }
 
 th,
 td {
-  padding: 13px 14px;
+  @apply px-3.5 py-[13px] text-left align-middle;
   border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: middle;
 }
 
 th {
+  @apply uppercase;
   background: #f8fafc;
   color: var(--muted);
   font-size: 0.78rem;
-  text-transform: uppercase;
 }
 
 td {
@@ -366,27 +307,18 @@ tbody tr:last-child td {
 }
 
 .row-actions {
-  justify-content: flex-end;
-  gap: 8px;
+  @apply justify-end gap-2;
 }
 
 .details-panel {
-  position: relative;
-  justify-content: space-between;
-  gap: 18px;
-  margin-top: 16px;
-  padding: 16px;
+  @apply relative mt-4 justify-between gap-[18px] rounded-lg p-4;
   border: 1px solid #b9ddd7;
-  border-radius: 8px;
   background: var(--surface-muted);
 }
 
 .details-panel dl {
-  display: grid;
+  @apply m-0 grid flex-1 gap-3;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  flex: 1;
-  margin: 0;
 }
 
 .details-panel dt {
@@ -403,7 +335,7 @@ tbody tr:last-child td {
 }
 
 .spin {
-  animation: spin 0.85s linear infinite;
+  @apply animate-spin;
 }
 
 @keyframes spin {
@@ -414,7 +346,7 @@ tbody tr:last-child td {
 
 @media (max-width: 880px) {
   .agenda-grid {
-    grid-template-columns: 1fr;
+    @apply grid-cols-1;
   }
 
   .contact-form {
@@ -425,22 +357,21 @@ tbody tr:last-child td {
 @media (max-width: 640px) {
   .auth-page,
   .agenda-page {
-    padding: 16px;
+    @apply p-4;
   }
 
   .auth-card,
   .panel {
-    padding: 18px;
+    @apply p-[18px];
   }
 
   .topbar,
   .details-panel {
-    align-items: flex-start;
-    flex-direction: column;
+    @apply flex-col items-start;
   }
 
   .ghost-button {
-    width: 100%;
+    @apply w-full;
   }
 
   .details-panel dl {
@@ -454,11 +385,11 @@ tbody tr:last-child td {
   tr,
   th,
   td {
-    display: block;
+    @apply block;
   }
 
   table {
-    min-width: 0;
+    @apply min-w-0;
   }
 
   thead {
@@ -470,7 +401,7 @@ tbody tr:last-child td {
   }
 
   tr {
-    padding: 12px;
+    @apply p-3;
     border-bottom: 1px solid var(--line);
   }
 
@@ -479,11 +410,8 @@ tbody tr:last-child td {
   }
 
   td {
-    display: grid;
+    @apply grid gap-2.5 border-b-0 py-2;
     grid-template-columns: 92px minmax(0, 1fr);
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 0;
     overflow-wrap: anywhere;
   }
 
@@ -496,6 +424,6 @@ tbody tr:last-child td {
   }
 
   .row-actions {
-    justify-content: flex-start;
+    @apply justify-start;
   }
 }

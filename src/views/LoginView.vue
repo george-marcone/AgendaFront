@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Eye, EyeOff, LogIn } from '@lucide/vue';
-import { authService } from '../services/authService';
+import { useAuthStore } from '../stores/authStore';
 
 const router = useRouter();
+const authStore = useAuthStore();
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
@@ -13,7 +14,7 @@ const errorMessage = ref('');
 function handleSubmit() {
   errorMessage.value = '';
 
-  if (!authService.login(email.value, password.value)) {
+  if (!authStore.login(email.value, password.value)) {
     errorMessage.value = 'E-mail ou senha inválidos.';
     return;
   }

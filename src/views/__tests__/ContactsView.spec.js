@@ -137,6 +137,25 @@ describe('ContactsView', () => {
     expect(wrapper.text()).toContain('+55 (81) 99723-6704');
   });
 
+  it('exibe a força da senha enquanto cadastra um contato', async () => {
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    const inputs = wrapper.findAll('.contact-form input');
+    await inputs[3].setValue('abc');
+
+    expect(wrapper.find('.password-strength').exists()).toBe(true);
+    expect(wrapper.find('.password-strength').classes()).toContain('password-strength--very-weak');
+    expect(wrapper.find('.password-strength-track').attributes('aria-valuenow')).toBe('20');
+    expect(wrapper.text()).toContain('Força da senha: Muito fraca');
+
+    await inputs[3].setValue('User@12345678');
+
+    expect(wrapper.find('.password-strength').classes()).toContain('password-strength--very-strong');
+    expect(wrapper.find('.password-strength-track').attributes('aria-valuenow')).toBe('100');
+    expect(wrapper.text()).toContain('Força da senha: Muito forte');
+  });
+
   it('preenche o formulário ao editar e envia a alteração do contato', async () => {
     contactsApiMock.list
       .mockResolvedValueOnce([

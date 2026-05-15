@@ -158,6 +158,65 @@ h3 {
   color: var(--muted);
 }
 
+.password-strength {
+  @apply grid gap-1.5;
+}
+
+.password-strength-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.password-strength-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+.password-strength small {
+  @apply text-xs font-extrabold;
+  color: var(--muted);
+}
+
+.password-strength--very-weak .password-strength-track span,
+.password-strength--weak .password-strength-track span {
+  background: var(--danger);
+}
+
+.password-strength--very-weak small,
+.password-strength--weak small {
+  color: var(--danger);
+}
+
+.password-strength--medium .password-strength-track span {
+  background: #d97706;
+}
+
+.password-strength--medium small {
+  color: #92400e;
+}
+
+.password-strength--strong .password-strength-track span {
+  background: var(--primary);
+}
+
+.password-strength--strong small {
+  color: var(--primary-dark);
+}
+
+.password-strength--very-strong .password-strength-track span {
+  background: var(--success);
+}
+
+.password-strength--very-strong small {
+  color: var(--success);
+}
+
 .field input:focus,
 .search-row input:focus {
   border-color: var(--primary);

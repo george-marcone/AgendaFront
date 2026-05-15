@@ -45,6 +45,7 @@ const {
   isEditing,
   filteredContacts,
   phoneDigitsCount,
+  passwordStrength,
 } = storeToRefs(contactsStore);
 const {
   loadContacts,
@@ -201,7 +202,7 @@ onMounted(() => contactsStore.loadContacts());
               :minlength="PASSWORD_MIN_LENGTH"
               required
               :aria-invalid="Boolean(fieldErrors.password)"
-              aria-describedby="password-error"
+              aria-describedby="password-error password-strength password-hint"
               @input="fieldErrors.password = ''"
               @blur="validatePasswordField"
             />
@@ -219,7 +220,28 @@ onMounted(() => contactsStore.loadContacts());
           <small v-if="fieldErrors.password" id="password-error" class="field-error">
             {{ fieldErrors.password }}
           </small>
-          <small class="field-hint">Mínimo de {{ PASSWORD_MIN_LENGTH }} caracteres</small>
+          <div
+            v-if="form.password"
+            id="password-strength"
+            class="password-strength"
+            :class="`password-strength--${passwordStrength.level}`"
+            aria-live="polite"
+          >
+            <div
+              class="password-strength-track"
+              role="meter"
+              :aria-valuenow="passwordStrength.percent"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-valuetext="passwordStrength.label"
+            >
+              <span :style="{ width: `${passwordStrength.percent}%` }"></span>
+            </div>
+            <small>Força da senha: {{ passwordStrength.label }}</small>
+          </div>
+          <small id="password-hint" class="field-hint">
+            Mínimo de {{ PASSWORD_MIN_LENGTH }} caracteres, com letras, números e símbolos.
+          </small>
         </label>
 
         <button type="submit" class="primary-action" :disabled="saving">

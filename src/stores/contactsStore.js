@@ -4,6 +4,9 @@ import { contactsApi } from '../services/contactsApi';
 const EMAIL_PATTERN =
   /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
 const BRAZILIAN_MOBILE_PHONE_PATTERN = /^\+55 \(\d{2}\) \d{5}-\d{4}$/;
+export const NAME_MAX_LENGTH = 50;
+export const EMAIL_MAX_LENGTH = 40;
+export const PHONE_LOCAL_DIGIT_LENGTH = 11;
 
 export function createEmptyContactForm() {
   return {
@@ -23,10 +26,14 @@ export function createEmptyContactFieldErrors() {
 }
 
 export function getBrazilianMobileDigits(value = '') {
-  const digits = String(value).replace(/\D/g, '');
-  const withoutCountryCode = digits.startsWith('55') && digits.length > 11 ? digits.slice(2) : digits;
+  const rawValue = String(value).trim();
+  const digits = rawValue.replace(/\D/g, '');
+  const hasFormattedCountryCode = rawValue.startsWith('+55');
+  const hasPastedCountryCode = digits.startsWith('55') && digits.length > PHONE_LOCAL_DIGIT_LENGTH;
+  const withoutCountryCode =
+    hasFormattedCountryCode || hasPastedCountryCode ? digits.slice(2) : digits;
 
-  return withoutCountryCode.slice(0, 11);
+  return withoutCountryCode.slice(0, PHONE_LOCAL_DIGIT_LENGTH);
 }
 
 export function formatBrazilianMobilePhone(value = '') {
@@ -119,6 +126,8 @@ export const useContactsStore = defineStore('contacts', {
           .some((value) => value.toLowerCase().includes(term));
       });
     },
+
+    phoneDigitsCount: (state) => getBrazilianMobileDigits(state.form.phone).length,
   },
 
   actions: {
@@ -147,7 +156,16 @@ export const useContactsStore = defineStore('contacts', {
     },
 
     validateNameField() {
-      this.fieldErrors.name = this.form.name.trim() ? '' : 'Informe o nome.';
+      const name = this.form.name.trim();
+
+      if (!name) {
+        this.fieldErrors.name = 'Informe o nome.';
+      } else if (name.length > NAME_MAX_LENGTH) {
+        this.fieldErrors.name = `Informe no máximo ${NAME_MAX_LENGTH} caracteres.`;
+      } else {
+        this.fieldErrors.name = '';
+      }
+
       return !this.fieldErrors.name;
     },
 
@@ -156,6 +174,8 @@ export const useContactsStore = defineStore('contacts', {
 
       if (!email) {
         this.fieldErrors.email = 'Informe o e-mail.';
+      } else if (email.length > EMAIL_MAX_LENGTH) {
+        this.fieldErrors.email = `Informe no máximo ${EMAIL_MAX_LENGTH} caracteres.`;
       } else if (!isValidEmail(email)) {
         this.fieldErrors.email = 'Informe um e-mail válido.';
       } else {
@@ -169,7 +189,8 @@ export const useContactsStore = defineStore('contacts', {
       if (!this.form.phone.trim()) {
         this.fieldErrors.phone = 'Informe o telefone.';
       } else if (!isValidBrazilianMobilePhone(this.form.phone)) {
-        this.fieldErrors.phone = 'Informe o telefone no formato +55 (xx) xxxxx-xxxx.';
+        this.fieldErrors.phone =
+          'Informe 11 números para DDD + celular no formato +55 (xx) xxxxx-xxxx.';
       } else {
         this.fieldErrors.phone = '';
       }

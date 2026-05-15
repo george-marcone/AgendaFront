@@ -153,6 +153,11 @@ h3 {
   color: var(--danger);
 }
 
+.field-hint {
+  @apply text-xs font-bold;
+  color: var(--muted);
+}
+
 .field input:focus,
 .search-row input:focus {
   border-color: var(--primary);

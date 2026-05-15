@@ -64,9 +64,13 @@ describe('ContactsView', () => {
     const inputs = wrapper.findAll('.contact-form input');
     await inputs[0].setValue('Ana Silva');
     await inputs[1].setValue('ana@email.com');
-    await inputs[2].setValue('11999990000');
+    await inputs[2].setValue('81997236704');
 
-    expect(inputs[2].element.value).toBe('+55 (11) 99999-0000');
+    expect(inputs[0].attributes('maxlength')).toBe('50');
+    expect(inputs[1].attributes('maxlength')).toBe('40');
+    expect(inputs[2].attributes('maxlength')).toBe('19');
+    expect(inputs[2].element.value).toBe('+55 (81) 99723-6704');
+    expect(wrapper.text()).toContain('11/11 números');
 
     await wrapper.find('form.contact-form').trigger('submit.prevent');
     await flushPromises();
@@ -75,7 +79,7 @@ describe('ContactsView', () => {
       expect.objectContaining({
         name: 'Ana Silva',
         email: 'ana@email.com',
-        phone: '+55 (11) 99999-0000',
+        phone: '+55 (81) 99723-6704',
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
@@ -154,7 +158,9 @@ describe('ContactsView', () => {
 
     expect(contactsApiMock.create).not.toHaveBeenCalled();
     expect(wrapper.text()).toContain('Informe um e-mail válido.');
-    expect(wrapper.text()).toContain('Informe o telefone no formato +55 (xx) xxxxx-xxxx.');
+    expect(wrapper.text()).toContain(
+      'Informe 11 números para DDD + celular no formato +55 (xx) xxxxx-xxxx.',
+    );
   });
 
   it('valida formato de e-mail e telefone ao sair dos campos', async () => {
@@ -168,6 +174,8 @@ describe('ContactsView', () => {
     await inputs[2].trigger('blur');
 
     expect(wrapper.text()).toContain('Informe um e-mail válido.');
-    expect(wrapper.text()).toContain('Informe o telefone no formato +55 (xx) xxxxx-xxxx.');
+    expect(wrapper.text()).toContain(
+      'Informe 11 números para DDD + celular no formato +55 (xx) xxxxx-xxxx.',
+    );
   });
 });

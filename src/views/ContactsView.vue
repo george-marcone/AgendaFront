@@ -16,7 +16,12 @@ import {
   X,
 } from '@lucide/vue';
 import { useAuthStore } from '../stores/authStore';
-import { useContactsStore } from '../stores/contactsStore';
+import {
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  PHONE_LOCAL_DIGIT_LENGTH,
+  useContactsStore,
+} from '../stores/contactsStore';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -35,6 +40,7 @@ const {
   successMessage,
   isEditing,
   filteredContacts,
+  phoneDigitsCount,
 } = storeToRefs(contactsStore);
 const {
   loadContacts,
@@ -106,6 +112,7 @@ onMounted(() => contactsStore.loadContacts());
             v-model="form.name"
             type="text"
             autocomplete="name"
+            :maxlength="NAME_MAX_LENGTH"
             required
             :aria-invalid="Boolean(fieldErrors.name)"
             aria-describedby="name-error"
@@ -115,6 +122,7 @@ onMounted(() => contactsStore.loadContacts());
           <small v-if="fieldErrors.name" id="name-error" class="field-error">
             {{ fieldErrors.name }}
           </small>
+          <small class="field-hint">{{ form.name.length }}/{{ NAME_MAX_LENGTH }}</small>
         </label>
 
         <label class="field">
@@ -123,6 +131,7 @@ onMounted(() => contactsStore.loadContacts());
             v-model="form.email"
             type="email"
             autocomplete="email"
+            :maxlength="EMAIL_MAX_LENGTH"
             required
             pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$"
             :aria-invalid="Boolean(fieldErrors.email)"
@@ -133,6 +142,7 @@ onMounted(() => contactsStore.loadContacts());
           <small v-if="fieldErrors.email" id="email-error" class="field-error">
             {{ fieldErrors.email }}
           </small>
+          <small class="field-hint">{{ form.email.length }}/{{ EMAIL_MAX_LENGTH }}</small>
         </label>
 
         <label class="field">
@@ -144,6 +154,7 @@ onMounted(() => contactsStore.loadContacts());
             inputmode="numeric"
             placeholder="+55 (11) 99999-9999"
             pattern="^\+55 \([0-9]{2}\) [0-9]{5}-[0-9]{4}$"
+            maxlength="19"
             required
             :aria-invalid="Boolean(fieldErrors.phone)"
             aria-describedby="phone-error"
@@ -152,6 +163,9 @@ onMounted(() => contactsStore.loadContacts());
           />
           <small v-if="fieldErrors.phone" id="phone-error" class="field-error">
             {{ fieldErrors.phone }}
+          </small>
+          <small class="field-hint">
+            {{ phoneDigitsCount }}/{{ PHONE_LOCAL_DIGIT_LENGTH }} números
           </small>
         </label>
 

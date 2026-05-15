@@ -16,6 +16,8 @@ describe('contactsStore validators', () => {
 
   it('formata e valida telefone brasileiro no padrão +55 (xx) xxxxx-xxxx', () => {
     expect(formatBrazilianMobilePhone('11999990000')).toBe('+55 (11) 99999-0000');
+    expect(formatBrazilianMobilePhone('81997236704')).toBe('+55 (81) 99723-6704');
+    expect(formatBrazilianMobilePhone('+55 (81) 99723-6704')).toBe('+55 (81) 99723-6704');
     expect(isValidBrazilianMobilePhone('+55 (11) 99999-0000')).toBe(true);
     expect(isValidBrazilianMobilePhone('11999990000')).toBe(true);
     expect(isValidBrazilianMobilePhone('+55 (11) 9999-0000')).toBe(false);

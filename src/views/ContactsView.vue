@@ -18,6 +18,7 @@ import {
 import { useAuthStore } from '../stores/authStore';
 import {
   EMAIL_MAX_LENGTH,
+  formatBrazilianMobilePhone,
   NAME_MAX_LENGTH,
   PHONE_LOCAL_DIGIT_LENGTH,
   useContactsStore,
@@ -76,7 +77,7 @@ onMounted(() => contactsStore.loadContacts());
   <main class="agenda-page">
     <header class="topbar">
       <div>
-        <span class="eyebrow">CoreFlow</span>
+        <span class="eyebrow">GMMS TECH SOLUTIONS</span>
         <h1>Agenda de Contatos</h1>
       </div>
 
@@ -232,7 +233,7 @@ onMounted(() => contactsStore.loadContacts());
               <tr v-for="contact in filteredContacts" :key="contact.id">
                 <td data-label="Nome">{{ contact.name }}</td>
                 <td data-label="E-mail">{{ contact.email }}</td>
-                <td data-label="Telefone">{{ contact.phone }}</td>
+                <td data-label="Telefone">{{ formatBrazilianMobilePhone(contact.phone) }}</td>
                 <td class="row-actions" data-label="Ações">
                   <button
                     type="button"
@@ -282,7 +283,7 @@ onMounted(() => contactsStore.loadContacts());
             </div>
             <div>
               <dt>Telefone</dt>
-              <dd>{{ selectedContact.phone }}</dd>
+              <dd>{{ formatBrazilianMobilePhone(selectedContact.phone) }}</dd>
             </div>
           </dl>
           <button

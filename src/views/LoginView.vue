@@ -29,7 +29,7 @@ function handleSubmit() {
       <div class="auth-brand">
         <div class="brand-mark" aria-hidden="true">A</div>
         <div>
-          <span class="eyebrow">CoreFlow</span>
+          <span class="eyebrow">GMMS TECH SOLUTIONS</span>
           <h1 id="login-title">Agenda de Contatos</h1>
         </div>
       </div>

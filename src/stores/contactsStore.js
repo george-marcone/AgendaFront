@@ -4,9 +4,42 @@ import { contactsApi } from '../services/contactsApi';
 const EMAIL_PATTERN =
   /^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
 const BRAZILIAN_MOBILE_PHONE_PATTERN = /^\+55 \(\d{2}\) \d{5}-\d{4}$/;
+const RECENT_CONTACT_IDS_KEY = 'agenda-front-recent-contact-ids';
+const DATE_FIELDS = [
+  'createdAt',
+  'created_at',
+  'createdOn',
+  'createdDate',
+  'registeredAt',
+  'registrationDate',
+];
 export const NAME_MAX_LENGTH = 50;
 export const EMAIL_MAX_LENGTH = 40;
 export const PHONE_LOCAL_DIGIT_LENGTH = 11;
+
+function getStorage() {
+  return typeof localStorage === 'undefined' ? null : localStorage;
+}
+
+function readRecentContactIds() {
+  const rawIds = getStorage()?.getItem(RECENT_CONTACT_IDS_KEY);
+
+  if (!rawIds) {
+    return [];
+  }
+
+  try {
+    const ids = JSON.parse(rawIds);
+    return Array.isArray(ids) ? ids : [];
+  } catch {
+    getStorage()?.removeItem(RECENT_CONTACT_IDS_KEY);
+    return [];
+  }
+}
+
+function saveRecentContactIds(ids) {
+  getStorage()?.setItem(RECENT_CONTACT_IDS_KEY, JSON.stringify(ids.slice(0, 25)));
+}
 
 export function createEmptyContactForm() {
   return {
@@ -67,6 +100,12 @@ export function formatBrazilianMobilePhone(value = '') {
   return formatted;
 }
 
+export function toBrazilianE164Phone(value = '') {
+  const digits = getBrazilianMobileDigits(value);
+
+  return digits ? `+55${digits}` : '';
+}
+
 export function isValidEmail(value = '') {
   return EMAIL_PATTERN.test(value.trim());
 }
@@ -95,9 +134,41 @@ export function normalizeContactsResponse(response) {
   return [];
 }
 
+export function getContactCreatedTime(contact) {
+  const fieldName = DATE_FIELDS.find((field) => contact?.[field]);
+  const timestamp = fieldName ? Date.parse(contact[fieldName]) : Number.NaN;
+
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+export function sortContactsByMostRecent(contacts, recentContactIds = []) {
+  return [...contacts]
+    .map((contact, originalIndex) => ({
+      contact,
+      originalIndex,
+      createdTime: getContactCreatedTime(contact),
+      recentIndex: recentContactIds.indexOf(contact.id),
+    }))
+    .sort((left, right) => {
+      if (left.createdTime || right.createdTime) {
+        return right.createdTime - left.createdTime || left.originalIndex - right.originalIndex;
+      }
+
+      if (left.recentIndex !== -1 || right.recentIndex !== -1) {
+        if (left.recentIndex === -1) return 1;
+        if (right.recentIndex === -1) return -1;
+        return left.recentIndex - right.recentIndex;
+      }
+
+      return left.originalIndex - right.originalIndex;
+    })
+    .map(({ contact }) => contact);
+}
+
 export const useContactsStore = defineStore('contacts', {
   state: () => ({
     contacts: [],
+    recentContactIds: readRecentContactIds(),
     form: createEmptyContactForm(),
     fieldErrors: createEmptyContactFieldErrors(),
     searchTerm: '',
@@ -148,6 +219,16 @@ export const useContactsStore = defineStore('contacts', {
     resetForm() {
       this.form = createEmptyContactForm();
       this.clearFieldErrors();
+    },
+
+    promoteRecentContact(id) {
+      if (!id) {
+        return;
+      }
+
+      this.recentContactIds = [id, ...this.recentContactIds.filter((contactId) => contactId !== id)];
+      saveRecentContactIds(this.recentContactIds);
+      this.contacts = sortContactsByMostRecent(this.contacts, this.recentContactIds);
     },
 
     setPhone(value) {
@@ -222,7 +303,10 @@ export const useContactsStore = defineStore('contacts', {
 
       try {
         const response = await contactsApi.list();
-        this.contacts = normalizeContactsResponse(response);
+        this.contacts = sortContactsByMostRecent(
+          normalizeContactsResponse(response),
+          this.recentContactIds,
+        );
       } catch (error) {
         this.setError(error);
       } finally {
@@ -260,20 +344,31 @@ export const useContactsStore = defineStore('contacts', {
         return;
       }
 
-      this.form.phone = formatBrazilianMobilePhone(this.form.phone);
+      const payload = {
+        ...this.form,
+        phone: toBrazilianE164Phone(this.form.phone),
+      };
+      const wasEditing = this.isEditing;
       this.saving = true;
 
       try {
-        if (this.isEditing) {
-          await contactsApi.update(this.form);
+        if (wasEditing) {
+          await contactsApi.update(payload);
           this.successMessage = 'Contato atualizado.';
         } else {
-          await contactsApi.create(this.form);
+          await contactsApi.create(payload);
           this.successMessage = 'Contato cadastrado.';
         }
 
         this.resetForm();
         await this.loadContacts({ keepFeedback: true });
+
+        if (!wasEditing) {
+          const createdContact = this.contacts.find((contact) => {
+            return contact.email === payload.email && contact.phone === payload.phone;
+          });
+          this.promoteRecentContact(createdContact?.id);
+        }
       } catch (error) {
         this.setError(error);
       } finally {

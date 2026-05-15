@@ -3,6 +3,8 @@ import {
   formatBrazilianMobilePhone,
   isValidBrazilianMobilePhone,
   isValidEmail,
+  sortContactsByMostRecent,
+  toBrazilianE164Phone,
 } from '../contactsStore';
 
 describe('contactsStore validators', () => {
@@ -22,5 +24,38 @@ describe('contactsStore validators', () => {
     expect(isValidBrazilianMobilePhone('11999990000')).toBe(true);
     expect(isValidBrazilianMobilePhone('+55 (11) 9999-0000')).toBe(false);
     expect(isValidBrazilianMobilePhone('119999')).toBe(false);
+  });
+
+  it('remove máscara e gera telefone no formato +xxxxxxxxxxxxx para payload', () => {
+    expect(toBrazilianE164Phone('+55 (81) 99723-6704')).toBe('+5581997236704');
+    expect(toBrazilianE164Phone('81997236704')).toBe('+5581997236704');
+  });
+
+  it('ordena contatos por data de criação mais recente quando disponível', () => {
+    const contacts = [
+      { id: 'older', name: 'Older', createdAt: '2026-05-10T10:00:00.000Z' },
+      { id: 'newer', name: 'Newer', createdAt: '2026-05-15T10:00:00.000Z' },
+      { id: 'middle', name: 'Middle', createdAt: '2026-05-12T10:00:00.000Z' },
+    ];
+
+    expect(sortContactsByMostRecent(contacts).map((contact) => contact.id)).toEqual([
+      'newer',
+      'middle',
+      'older',
+    ]);
+  });
+
+  it('promove contatos marcados como recentes quando não há data de criação', () => {
+    const contacts = [
+      { id: 'first', name: 'First' },
+      { id: 'second', name: 'Second' },
+      { id: 'third', name: 'Third' },
+    ];
+
+    expect(sortContactsByMostRecent(contacts, ['third']).map((contact) => contact.id)).toEqual([
+      'third',
+      'first',
+      'second',
+    ]);
   });
 });

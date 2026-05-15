@@ -44,6 +44,32 @@ describe('ContactsView', () => {
     contactsApiMock.remove.mockResolvedValue(null);
   });
 
+  it('exibe a lista ordenada pelo registro mais recente quando a API fornece data', async () => {
+    contactsApiMock.list.mockResolvedValueOnce([
+      {
+        id: 'older-contact',
+        name: 'Contato Antigo',
+        email: 'antigo@email.com',
+        phone: '+5511900000000',
+        createdAt: '2026-05-10T10:00:00.000Z',
+      },
+      {
+        id: 'newer-contact',
+        name: 'Contato Novo',
+        email: 'novo@email.com',
+        phone: '+5581997236704',
+        createdAt: '2026-05-15T10:00:00.000Z',
+      },
+    ]);
+
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    const rows = wrapper.findAll('tbody tr');
+    expect(rows[0].text()).toContain('Contato Novo');
+    expect(rows[1].text()).toContain('Contato Antigo');
+  });
+
   it('cadastra um contato pelo formulário usando a store do Pinia', async () => {
     contactsApiMock.list
       .mockResolvedValueOnce([])
@@ -53,7 +79,7 @@ describe('ContactsView', () => {
             id: 'contact-1',
             name: 'Ana Silva',
             email: 'ana@email.com',
-            phone: '+55 (11) 99999-0000',
+            phone: '+5581997236704',
           },
         ],
       });
@@ -79,11 +105,12 @@ describe('ContactsView', () => {
       expect.objectContaining({
         name: 'Ana Silva',
         email: 'ana@email.com',
-        phone: '+55 (81) 99723-6704',
+        phone: '+5581997236704',
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
     expect(wrapper.text()).toContain('Ana Silva');
+    expect(wrapper.text()).toContain('+55 (81) 99723-6704');
   });
 
   it('preenche o formulário ao editar e envia a alteração do contato', async () => {
@@ -93,7 +120,7 @@ describe('ContactsView', () => {
           id: 'contact-1',
           name: 'George Marcone',
           email: 'george@email.com',
-          phone: '+55 (11) 90000-0000',
+          phone: '+5511900000000',
         },
       ])
       .mockResolvedValueOnce([
@@ -101,7 +128,7 @@ describe('ContactsView', () => {
           id: 'contact-1',
           name: 'George Marcone',
           email: 'george@email.com',
-          phone: '+55 (11) 98888-7777',
+          phone: '+5511988887777',
         },
       ]);
 
@@ -126,7 +153,7 @@ describe('ContactsView', () => {
         id: 'contact-1',
         name: 'George Marcone',
         email: 'george@email.com',
-        phone: '+55 (11) 98888-7777',
+        phone: '+5511988887777',
       }),
     );
     expect(wrapper.text()).toContain('Contato atualizado.');

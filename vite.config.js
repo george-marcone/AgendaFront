@@ -4,7 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const coreFlowTarget = env.VITE_CORE_FLOW_TARGET || 'http://localhost:5062';
+  const apiBaseUrl = env.VITE_API_BASE_URL || '/api';
+  const apiProxyPath = apiBaseUrl.startsWith('/') ? apiBaseUrl.replace(/\/$/, '') : '/api';
+  const frontendPort = Number(env.VITE_FRONTEND_PORT) || 5173;
+  const coreFlowLocalTarget =
+    env.VITE_CORE_FLOW_LOCAL_TARGET || env.VITE_CORE_FLOW_TARGET || 'http://localhost:5062';
 
   return {
     plugins: [vue(), tailwindcss()],
@@ -13,10 +17,10 @@ export default defineConfig(({ mode }) => {
       setupFiles: './src/test/setup.js',
     },
     server: {
-      port: 5173,
+      port: frontendPort,
       proxy: {
-        '/api': {
-          target: coreFlowTarget,
+        [apiProxyPath]: {
+          target: coreFlowLocalTarget,
           changeOrigin: true,
           secure: false,
         },

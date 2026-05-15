@@ -7,7 +7,7 @@ O layout usa Tailwind CSS integrado ao Vite, e o estado da aplicacao usa Pinia.
 ## Requisitos
 
 - Node.js
-- API CoreFlow rodando em `http://localhost:5062`
+- API CoreFlow rodando localmente em `http://localhost:5062` ou via Docker em `http://localhost:5088`
 
 ## Como rodar
 
@@ -17,6 +17,12 @@ npm run dev
 ```
 
 A aplicação abre em `http://localhost:5173`.
+
+Crie um `.env` a partir do `.env.example` quando precisar mudar portas ou destinos:
+
+```bash
+cp .env.example .env
+```
 
 ## Testes unitarios
 
@@ -33,7 +39,30 @@ Os testes usam Vitest, Vue Test Utils e jsdom.
 
 ## API
 
-Por padrão, o front usa `VITE_API_BASE_URL=/api` e o Vite encaminha as chamadas para `http://localhost:5062`.
+Por padrão, o browser chama sempre `VITE_API_BASE_URL=/api`.
+
+Essa rota é encaminhada por proxy:
+
+- Local com Vite: `/api` -> `VITE_CORE_FLOW_LOCAL_TARGET`
+- Container com Nginx: `/api` -> `VITE_CORE_FLOW_DOCKER_TARGET`
+
+Variáveis do front:
+
+```env
+VITE_API_BASE_URL=/api
+VITE_FRONTEND_PORT=5173
+VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5062
+VITE_CORE_FLOW_DOCKER_TARGET=http://host.docker.internal:5088
+```
+
+Cenários comuns:
+
+- Front local + API local via `dotnet run`: deixe `VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5062`.
+- Front local + API em Docker: use `VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5088`.
+- Front em Docker + API em Docker publicada no host: use `VITE_CORE_FLOW_DOCKER_TARGET=http://host.docker.internal:5088`.
+- Front e API no mesmo `docker-compose`/network: use `VITE_CORE_FLOW_DOCKER_TARGET=http://coreflow_api:8080`.
+
+Manter `VITE_API_BASE_URL=/api` evita depender de CORS no backend, porque o proxy faz a ponte.
 
 Endpoints consumidos:
 
@@ -43,11 +72,15 @@ Endpoints consumidos:
 - `PUT /api/User/{id}`
 - `DELETE /api/User/{id}`
 
-Para mudar o destino do backend, crie um arquivo `.env` com base no `.env.example`.
+No backend CoreFlow não há arquivo `.env`. Os equivalentes são:
+
+- `CoreFlow.API/Properties/launchSettings.json`: define a porta local `http://localhost:5062`.
+- `CoreFlow.API/appsettings.json`: define configurações da API, incluindo connection string.
+- `docker-compose.yml` do backend: define `ASPNETCORE_URLS=http://+:8080` e publica `5088:8080`.
 
 ## Docker
 
-Com a API CoreFlow rodando pelo `docker-compose` dela, o backend fica exposto em `http://localhost:5088`.
+Com a API CoreFlow rodando pelo `docker-compose` dela, o backend fica exposto no host em `http://localhost:5088`.
 
 Para subir o front em container:
 
@@ -57,15 +90,14 @@ docker compose up --build
 
 A aplicação ficará disponível em `http://localhost:5173`.
 
-O container usa Nginx para servir o build estático e encaminha chamadas `/api` para `API_PROXY_TARGET`, que por padrão é:
+O container usa Nginx para servir o build estático e encaminha chamadas `/api` para `VITE_CORE_FLOW_DOCKER_TARGET`, que por padrão é:
 
 ```bash
 http://host.docker.internal:5088
 ```
 
-Se a API estiver em outro endereço, ajuste no `docker-compose.yml`:
+Se a API estiver em outro endereço, ajuste no `.env`:
 
-```yaml
-environment:
-  API_PROXY_TARGET: http://seu-host:porta
+```env
+VITE_CORE_FLOW_DOCKER_TARGET=http://seu-host:porta
 ```

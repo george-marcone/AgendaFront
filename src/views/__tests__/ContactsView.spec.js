@@ -44,6 +44,28 @@ describe('ContactsView', () => {
     contactsApiMock.remove.mockResolvedValue(null);
   });
 
+  it('exibe primeiro e ultimo nome da pessoa logada acima do botao sair', async () => {
+    localStorage.setItem(
+      'agenda-front-auth',
+      JSON.stringify({
+        accessToken: 'jwt-token',
+        tokenType: 'Bearer',
+        expiresAt: '2099-01-01T00:00:00.000Z',
+        user: {
+          id: 'user-1',
+          name: 'George Henrique Silva',
+          email: 'george@email.com',
+        },
+      }),
+    );
+
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    expect(wrapper.find('.logged-user').text()).toBe('George Silva');
+    expect(wrapper.find('.topbar-actions .ghost-button').text()).toContain('Sair');
+  });
+
   it('exibe a lista ordenada pelo registro mais recente quando a API fornece data', async () => {
     contactsApiMock.list.mockResolvedValueOnce([
       {

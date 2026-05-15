@@ -237,6 +237,17 @@ h3 {
   @apply mx-auto mb-[22px] w-full max-w-[1180px] justify-between gap-4;
 }
 
+.topbar-actions {
+  @apply grid justify-items-end gap-2;
+}
+
+.logged-user {
+  @apply mb-0 text-right font-extrabold;
+  color: var(--ink);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
 .agenda-grid {
   @apply mx-auto grid w-full max-w-[1180px] items-start gap-[18px];
   grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
@@ -383,6 +394,14 @@ tbody tr:last-child td {
   .topbar,
   .details-panel {
     @apply flex-col items-start;
+  }
+
+  .topbar-actions {
+    @apply w-full justify-items-start;
+  }
+
+  .logged-user {
+    @apply text-left;
   }
 
   .ghost-button {

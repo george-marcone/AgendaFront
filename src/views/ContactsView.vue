@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import {
@@ -58,6 +58,19 @@ const {
   validatePhoneField,
   validatePasswordField,
 } = contactsStore;
+const loggedUserName = computed(() => getFirstAndLastName(authStore.user));
+
+function getFirstAndLastName(user) {
+  const explicitName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
+  const fullName = explicitName || user?.name || user?.fullName || user?.displayName || '';
+  const nameParts = String(fullName).trim().split(/\s+/).filter(Boolean);
+
+  if (nameParts.length <= 1) {
+    return nameParts[0] || '';
+  }
+
+  return `${nameParts[0]} ${nameParts[nameParts.length - 1]}`;
+}
 
 async function deleteContact(contact) {
   const confirmed = window.confirm(`Excluir ${contact.name}?`);
@@ -85,10 +98,14 @@ onMounted(() => contactsStore.loadContacts());
         <h1>Agenda de Contatos</h1>
       </div>
 
-      <button class="ghost-button" type="button" @click="logout">
-        <LogOut :size="18" />
-        Sair
-      </button>
+      <div class="topbar-actions">
+        <p v-if="loggedUserName" class="logged-user">{{ loggedUserName }}</p>
+
+        <button class="ghost-button" type="button" @click="logout">
+          <LogOut :size="18" />
+          Sair
+        </button>
+      </div>
     </header>
 
     <section class="agenda-grid">

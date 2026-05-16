@@ -1,0 +1,408 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R] /Count 8 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Length 4738 >>
+stream
+BT /F2 22 Tf 48.00 789.89 Td (Documenta\347\343o t\351cnica - AgendaFront) Tj ET
+BT /F1 10 Tf 48.00 741.89 Td (Gerado em: 16/05/2026) Tj ET
+BT /F2 15 Tf 48.00 704.89 Td (1. Vis\343o geral) Tj ET
+BT /F1 10 Tf 48.00 671.89 Td (O AgendaFront \351 o frontend da Agenda de Contatos da GMMS Tech Solutions. Ele foi desenvolvido) Tj ET
+BT /F1 10 Tf 48.00 657.89 Td (como uma aplica\347\343o web em Vue.js para autenticar usu\341rios e permitir a gest\343o de contatos por) Tj ET
+BT /F1 10 Tf 48.00 643.89 Td (meio de opera\347\365es de cadastro, consulta, edi\347\343o, exclus\343o, busca e pagina\347\343o.) Tj ET
+BT /F1 10 Tf 48.00 620.89 Td (A aplica\347\343o consome a API CoreFlow pelos endpoints `/api/Auth` e `/api/User`. O frontend n\343o) Tj ET
+BT /F1 10 Tf 48.00 606.89 Td (guarda os contatos como fonte definitiva de dados; ele atua como camada de interface, valida\347\343o) Tj ET
+BT /F1 10 Tf 48.00 592.89 Td (inicial, sess\343o do usu\341rio e comunica\347\343o com o backend.) Tj ET
+BT /F2 15 Tf 48.00 555.89 Td (2. Tipo de aplica\347\343o) Tj ET
+BT /F1 10 Tf 48.00 522.89 Td (O projeto \351 uma SPA, ou seja, uma Single Page Application. A evid\352ncia principal est\341 em) Tj ET
+BT /F1 10 Tf 48.00 508.89 Td (`src/main.js`, `src/App.vue`, `src/router/index.js` e no fallback do Nginx em) Tj ET
+BT /F1 10 Tf 48.00 494.89 Td (`nginx/default.conf.template`, que redireciona as rotas do navegador para `index.html` usando) Tj ET
+BT /F1 10 Tf 48.00 480.89 Td (`try_files $uri $uri/ /index.html`.) Tj ET
+BT /F1 10 Tf 48.00 457.89 Td (Classifica\347\343o do projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 434.89 Td (Tipo | Se aplica? | Observa\347\343o) Tj ET
+BT /F3 8.2 Tf 48.00 420.89 Td (SPA | Sim | A navega\347\343o ocorre no cliente com Vue Router, sem recarregar p\341ginas HTML diferentes.) Tj ET
+BT /F3 8.2 Tf 48.00 408.89 Td (MPA | N\343o | N\343o h\341 m\372ltiplas p\341ginas HTML renderizadas pelo servidor; existe um `index.html` principal.) Tj ET
+BT /F3 8.2 Tf 48.00 396.89 Td (SSR | N\343o | N\343o h\341 renderiza\347\343o no servidor. O build gera arquivos est\341ticos servidos pelo Vite ou Nginx.) Tj ET
+BT /F3 8.2 Tf 48.00 384.89 Td (PWA | N\343o identificada | N\343o h\341 service worker, manifest web app ou estrat\351gia offline no c\363digo atual.) Tj ET
+BT /F3 8.2 Tf 48.00 372.89 Td (RPA | N\343o | RPA \351 automa\347\343o rob\363tica de processos. Este projeto \351 uma interface web, n\343o um rob\364 de) Tj ET
+BT /F3 8.2 Tf 48.00 361.89 Td (automa\347\343o.) Tj ET
+BT /F3 8.2 Tf 48.00 349.89 Td (ERP | N\343o como produto completo | O projeto \351 um m\363dulo/tela de agenda e usu\341rios. Ele poderia integrar um) Tj ET
+BT /F3 8.2 Tf 48.00 338.89 Td (ERP, mas n\343o cont\351m m\363dulos t\355picos de ERP como financeiro, estoque, vendas e fiscal.) Tj ET
+BT /F1 10 Tf 48.00 320.89 Td (Portanto, a defini\347\343o mais correta \351: SPA frontend de agenda de contatos, com autentica\347\343o JWT,) Tj ET
+BT /F1 10 Tf 48.00 306.89 Td (CRUD de contatos e integra\347\343o com uma API backend.) Tj ET
+BT /F2 15 Tf 48.00 269.89 Td (3. Arquitetura utilizada) Tj ET
+BT /F1 10 Tf 48.00 236.89 Td (A arquitetura \351 uma SPA client-side com separa\347\343o simples por responsabilidade. O projeto n\343o usa) Tj ET
+BT /F1 10 Tf 48.00 222.89 Td (uma arquitetura formal como Clean Architecture completa no frontend, mas segue uma organiza\347\343o em) Tj ET
+BT /F1 10 Tf 48.00 208.89 Td (camadas pr\341ticas:) Tj ET
+BT /F3 8.2 Tf 48.00 185.89 Td (Camada | Fun\347\343o | Onde est\341) Tj ET
+BT /F3 8.2 Tf 48.00 171.89 Td (Bootstrap da aplica\347\343o | Cria a aplica\347\343o Vue, registra Pinia e Vue Router e monta no elemento `#app`. |) Tj ET
+BT /F3 8.2 Tf 48.00 160.89 Td (`src/main.js`) Tj ET
+BT /F3 8.2 Tf 48.00 148.89 Td (Composi\347\343o raiz | Renderiza a rota ativa. | `src/App.vue`) Tj ET
+BT /F3 8.2 Tf 48.00 136.89 Td (Roteamento | Define as rotas `/login` e `/agenda`, redireciona `/` para `/agenda` e aplica guarda de) Tj ET
+BT /F3 8.2 Tf 48.00 125.89 Td (autentica\347\343o. | `src/router/index.js`) Tj ET
+BT /F3 8.2 Tf 48.00 113.89 Td (Views/telas | Cont\352m a interface, eventos de usu\341rio e integra\347\343o com stores. | `src/views/LoginView.vue`,) Tj ET
+BT /F3 8.2 Tf 48.00 102.89 Td (`src/views/ContactsView.vue`) Tj ET
+BT /F3 8.2 Tf 48.00 90.89 Td (Estado global | Centraliza estado, getters e a\347\365es de autentica\347\343o e contatos. | `src/stores/authStore.js`,) Tj ET
+BT /F3 8.2 Tf 48.00 79.89 Td (`src/stores/contactsStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 67.89 Td (Servi\347os de API | Encapsulam chamadas HTTP e montagem de payloads. | `src/services/apiClient.js`,) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 1 de 8) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 3833 >>
+stream
+BT /F3 8.2 Tf 48.00 789.89 Td (`src/services/authApi.js`, `src/services/contactsApi.js`) Tj ET
+BT /F3 8.2 Tf 48.00 777.89 Td (Sess\343o local | Normaliza, salva, l\352 e remove a sess\343o JWT do `localStorage`. | `src/services/authSession.js`) Tj ET
+BT /F3 8.2 Tf 48.00 765.89 Td (Regras auxiliares | Calculam for\347a de senha e valida\347\365es/formata\347\365es de contato. |) Tj ET
+BT /F3 8.2 Tf 48.00 754.89 Td (`src/services/passwordStrength.js`, `src/stores/contactsStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 742.89 Td (Estilos | Define o visual global com Tailwind CSS e classes customizadas. | `src/styles.css`) Tj ET
+BT /F3 8.2 Tf 48.00 730.89 Td (Testes | Validam tela de login, tela de contatos e regras da store de contatos. | `src/views/__tests__`,) Tj ET
+BT /F3 8.2 Tf 48.00 719.89 Td (`src/stores/__tests__`) Tj ET
+BT /F3 8.2 Tf 48.00 707.89 Td (Build e deploy | Configura Vite, Docker e Nginx para servir a SPA e encaminhar chamadas `/api`. |) Tj ET
+BT /F3 8.2 Tf 48.00 696.89 Td (`vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx/default.conf.template`) Tj ET
+BT /F1 10 Tf 48.00 678.89 Td (O fluxo arquitetural principal \351:) Tj ET
+BT /F1 10 Tf 48.00 655.89 Td (1. O usu\341rio acessa a SPA.) Tj ET
+BT /F1 10 Tf 48.00 638.89 Td (2. O Vue Router decide qual tela ser\341 exibida.) Tj ET
+BT /F1 10 Tf 48.00 621.89 Td (3. Rotas protegidas chamam a store de autentica\347\343o para validar a sess\343o.) Tj ET
+BT /F1 10 Tf 48.00 604.89 Td (4. As views acionam stores do Pinia.) Tj ET
+BT /F1 10 Tf 48.00 587.89 Td (5. As stores executam valida\347\365es e chamam servi\347os de API.) Tj ET
+BT /F1 10 Tf 48.00 570.89 Td (6. Os servi\347os usam `apiClient` para enviar requisi\347\365es HTTP ao backend.) Tj ET
+BT /F1 10 Tf 48.00 553.89 Td (7. A resposta atualiza o estado da store.) Tj ET
+BT /F1 10 Tf 48.00 536.89 Td (8. O Vue re-renderiza a interface de forma reativa.) Tj ET
+BT /F2 15 Tf 48.00 499.89 Td (4. Tecnologias e onde s\343o usadas) Tj ET
+BT /F2 12 Tf 48.00 456.89 Td (Vue 3) Tj ET
+BT /F1 10 Tf 48.00 429.89 Td (Vue \351 o framework principal da interface. O projeto usa Single File Components \(`.vue`\) e) Tj ET
+BT /F1 10 Tf 48.00 415.89 Td (Composition API com `<script setup>`.) Tj ET
+BT /F1 10 Tf 48.00 392.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 369.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 355.89 Td (`src/main.js` | Cria\347\343o e montagem da aplica\347\343o Vue.) Tj ET
+BT /F3 8.2 Tf 48.00 343.89 Td (`src/App.vue` | Renderiza\347\343o do componente da rota ativa com `<RouterView />`.) Tj ET
+BT /F3 8.2 Tf 48.00 331.89 Td (`src/views/LoginView.vue` | Tela de autentica\347\343o.) Tj ET
+BT /F3 8.2 Tf 48.00 319.89 Td (`src/views/ContactsView.vue` | Tela principal da agenda de contatos.) Tj ET
+BT /F2 12 Tf 48.00 291.89 Td (Vite) Tj ET
+BT /F1 10 Tf 48.00 264.89 Td (Vite \351 usado como ferramenta de desenvolvimento, build e proxy local.) Tj ET
+BT /F1 10 Tf 48.00 241.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 218.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 204.89 Td (`package.json` | Scripts `npm run dev`, `npm run build`, `npm run preview` e `npm run test:unit`.) Tj ET
+BT /F3 8.2 Tf 48.00 192.89 Td (`vite.config.js` | Plugins Vue e Tailwind, ambiente de teste jsdom, porta do frontend e proxy `/api`.) Tj ET
+BT /F3 8.2 Tf 48.00 180.89 Td (`index.html` | Entrada HTML usada pelo Vite para carregar a SPA.) Tj ET
+BT /F1 10 Tf 48.00 162.89 Td (O proxy do Vite encaminha chamadas feitas para `/api` ao backend CoreFlow configurado em) Tj ET
+BT /F1 10 Tf 48.00 148.89 Td (vari\341veis `VITE_CORE_FLOW_*`.) Tj ET
+BT /F2 12 Tf 48.00 115.89 Td (Vue Router) Tj ET
+BT /F1 10 Tf 48.00 88.89 Td (Vue Router controla a navega\347\343o client-side.) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 2 de 8) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 3382 >>
+stream
+BT /F1 10 Tf 48.00 789.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 766.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 752.89 Td (`src/router/index.js` | Define `/login`, `/agenda`, redirecionamento `/` e guarda de rota autenticada.) Tj ET
+BT /F1 10 Tf 48.00 734.89 Td (Regras de rota:) Tj ET
+BT /F1 10 Tf 48.00 711.89 Td (* `/` redireciona para `/agenda`.) Tj ET
+BT /F1 10 Tf 48.00 694.89 Td (* `/login` exibe a tela de login.) Tj ET
+BT /F1 10 Tf 48.00 677.89 Td (* `/agenda` exige autentica\347\343o.) Tj ET
+BT /F1 10 Tf 48.00 660.89 Td (* Se a sess\343o n\343o for v\341lida, o usu\341rio \351 enviado para `/login`.) Tj ET
+BT /F1 10 Tf 48.00 643.89 Td (* Se o usu\341rio j\341 estiver autenticado e acessar `/login`, ele \351 redirecionado para `/agenda`.) Tj ET
+BT /F2 12 Tf 48.00 610.89 Td (Pinia) Tj ET
+BT /F1 10 Tf 48.00 583.89 Td (Pinia \351 usado para estado global.) Tj ET
+BT /F1 10 Tf 48.00 560.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 537.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 523.89 Td (`src/stores/index.js` | Cria a inst\342ncia do Pinia.) Tj ET
+BT /F3 8.2 Tf 48.00 511.89 Td (`src/stores/authStore.js` | Estado e a\347\365es de login, autentica\347\343o, troca de senha e logout.) Tj ET
+BT /F3 8.2 Tf 48.00 499.89 Td (`src/stores/contactsStore.js` | Estado, valida\347\365es, filtros, pagina\347\343o e CRUD de contatos.) Tj ET
+BT /F2 12 Tf 48.00 471.89 Td (Tailwind CSS) Tj ET
+BT /F1 10 Tf 48.00 444.89 Td (Tailwind \351 usado para compor estilos com utilit\341rios e `@apply`.) Tj ET
+BT /F1 10 Tf 48.00 421.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 398.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 384.89 Td (`src/styles.css` | Importa Tailwind e define classes globais como `.auth-page`, `.agenda-page`, `.panel`,) Tj ET
+BT /F3 8.2 Tf 48.00 373.89 Td (`.primary-action`, `.contact-form`, `.contact-list` e responsividade.) Tj ET
+BT /F3 8.2 Tf 48.00 361.89 Td (`vite.config.js` | Registra o plugin `@tailwindcss/vite`.) Tj ET
+BT /F2 12 Tf 48.00 333.89 Td (Lucide Vue) Tj ET
+BT /F1 10 Tf 48.00 306.89 Td (Lucide Vue fornece \355cones para bot\365es e estados visuais.) Tj ET
+BT /F1 10 Tf 48.00 283.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 260.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 246.89 Td (`src/views/LoginView.vue` | \315cones de login, loading e mostrar/ocultar senha.) Tj ET
+BT /F3 8.2 Tf 48.00 234.89 Td (`src/views/ContactsView.vue` | \315cones de cadastro, salvar, editar, excluir, consultar, buscar, atualizar,) Tj ET
+BT /F3 8.2 Tf 48.00 223.89 Td (pagina\347\343o, logout e senha.) Tj ET
+BT /F2 12 Tf 48.00 195.89 Td (Fetch API e camada de servi\347os) Tj ET
+BT /F1 10 Tf 48.00 168.89 Td (As chamadas HTTP s\343o centralizadas em servi\347os para evitar espalhar l\363gica de API dentro das) Tj ET
+BT /F1 10 Tf 48.00 154.89 Td (views.) Tj ET
+BT /F1 10 Tf 48.00 131.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 108.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 94.89 Td (`src/services/apiClient.js` | Define `apiRequest`, base URL, headers, tradu\347\343o de mensagens de erro e) Tj ET
+BT /F3 8.2 Tf 48.00 83.89 Td (tratamento de sess\343o expirada.) Tj ET
+BT /F3 8.2 Tf 48.00 71.89 Td (`src/services/authApi.js` | Consome login, valida\347\343o de token e troca de senha.) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 3 de 8) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 4275 >>
+stream
+BT /F3 8.2 Tf 48.00 789.89 Td (`src/services/contactsApi.js` | Consome listagem, consulta por id, cadastro, edi\347\343o e exclus\343o de contatos.) Tj ET
+BT /F2 12 Tf 48.00 761.89 Td (localStorage) Tj ET
+BT /F1 10 Tf 48.00 734.89 Td (O `localStorage` \351 usado para manter informa\347\365es locais entre recarregamentos.) Tj ET
+BT /F1 10 Tf 48.00 711.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 688.89 Td (Chave | Finalidade | Arquivo) Tj ET
+BT /F3 8.2 Tf 48.00 674.89 Td (`agenda-front-auth` | Guarda sess\343o JWT, tipo do token, expira\347\343o e usu\341rio autenticado. |) Tj ET
+BT /F3 8.2 Tf 48.00 663.89 Td (`src/services/authSession.js`) Tj ET
+BT /F3 8.2 Tf 48.00 651.89 Td (`agenda-front-recent-contact-ids` | Guarda IDs de contatos rec\351m-cadastrados para prioriza\347\343o visual quando) Tj ET
+BT /F3 8.2 Tf 48.00 640.89 Td (a API n\343o retorna data de cria\347\343o. | `src/stores/contactsStore.js`) Tj ET
+BT /F2 12 Tf 48.00 612.89 Td (Vitest, Vue Test Utils e jsdom) Tj ET
+BT /F1 10 Tf 48.00 585.89 Td (S\343o usados para testes unit\341rios e de componentes.) Tj ET
+BT /F1 10 Tf 48.00 562.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 539.89 Td (Arquivo | Cobertura) Tj ET
+BT /F3 8.2 Tf 48.00 525.89 Td (`src/views/__tests__/LoginView.spec.js` | Login, erro de credenciais, persist\352ncia de sess\343o e altern\342ncia) Tj ET
+BT /F3 8.2 Tf 48.00 514.89 Td (de visibilidade de senha.) Tj ET
+BT /F3 8.2 Tf 48.00 502.89 Td (`src/views/__tests__/ContactsView.spec.js` | Lista de contatos, pagina\347\343o, cadastro, edi\347\343o, valida\347\365es,) Tj ET
+BT /F3 8.2 Tf 48.00 491.89 Td (troca de senha e exibi\347\343o do usu\341rio logado.) Tj ET
+BT /F3 8.2 Tf 48.00 479.89 Td (`src/stores/__tests__/contactsStore.spec.js` | Valida\347\343o de e-mail, telefone, senha padr\343o e ordena\347\343o por) Tj ET
+BT /F3 8.2 Tf 48.00 468.89 Td (contatos recentes.) Tj ET
+BT /F2 12 Tf 48.00 440.89 Td (Docker e Nginx) Tj ET
+BT /F1 10 Tf 48.00 413.89 Td (Docker empacota o frontend e Nginx serve os arquivos est\341ticos em produ\347\343o.) Tj ET
+BT /F1 10 Tf 48.00 390.89 Td (Uso no projeto:) Tj ET
+BT /F3 8.2 Tf 48.00 367.89 Td (Arquivo | Uso) Tj ET
+BT /F3 8.2 Tf 48.00 353.89 Td (`Dockerfile` | Build com Node 24 Alpine e runtime com Nginx 1.29 Alpine.) Tj ET
+BT /F3 8.2 Tf 48.00 341.89 Td (`docker-compose.yml` | Sobe o container do frontend.) Tj ET
+BT /F3 8.2 Tf 48.00 329.89 Td (`nginx/default.conf.template` | Serve a SPA e encaminha `/api/` para `API_PROXY_TARGET`.) Tj ET
+BT /F2 15 Tf 48.00 297.89 Td (5. Integra\347\343o com backend) Tj ET
+BT /F1 10 Tf 48.00 264.89 Td (O frontend usa `VITE_API_BASE_URL=/api` por padr\343o. Isso permite que o browser sempre chame uma) Tj ET
+BT /F1 10 Tf 48.00 250.89 Td (rota relativa `/api`, enquanto Vite ou Nginx fazem o proxy para a API CoreFlow.) Tj ET
+BT /F1 10 Tf 48.00 227.89 Td (Endpoints consumidos:) Tj ET
+BT /F3 8.2 Tf 48.00 204.89 Td (Opera\347\343o | M\351todo e endpoint | Arquivo consumidor) Tj ET
+BT /F3 8.2 Tf 48.00 190.89 Td (Login | `POST /api/Auth/login` | `src/services/authApi.js`) Tj ET
+BT /F3 8.2 Tf 48.00 178.89 Td (Validar sess\343o | `GET /api/Auth/authenticate` | `src/services/authApi.js`, `src/stores/authStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 166.89 Td (Listar contatos | `GET /api/User` | `src/services/contactsApi.js`) Tj ET
+BT /F3 8.2 Tf 48.00 154.89 Td (Consultar contato | `GET /api/User/{id}` | `src/services/contactsApi.js`) Tj ET
+BT /F3 8.2 Tf 48.00 142.89 Td (Cadastrar contato | `POST /api/User` | `src/services/contactsApi.js`, `src/stores/contactsStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 130.89 Td (Editar contato | `PUT /api/User/{id}` | `src/services/contactsApi.js`, `src/stores/contactsStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 118.89 Td (Alterar senha pr\363pria | `PATCH /api/User/me/password` | `src/services/authApi.js`, `src/stores/authStore.js`) Tj ET
+BT /F3 8.2 Tf 48.00 106.89 Td (Excluir contato | `DELETE /api/User/{id}` | `src/services/contactsApi.js`) Tj ET
+BT /F1 10 Tf 48.00 88.89 Td (Todas as chamadas protegidas usam `Authorization: Bearer <token>`, montado a partir da sess\343o) Tj ET
+BT /F1 10 Tf 48.00 74.89 Td (salva no `localStorage`.) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 4 de 8) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 3268 >>
+stream
+BT /F2 15 Tf 48.00 775.89 Td (6. Regra de neg\363cio do cadastro de contatos) Tj ET
+BT /F1 10 Tf 48.00 742.89 Td (O cadastro de contatos acontece na tela `src/views/ContactsView.vue`, mas as regras principais) Tj ET
+BT /F1 10 Tf 48.00 728.89 Td (est\343o em `src/stores/contactsStore.js` e a chamada HTTP final est\341 em) Tj ET
+BT /F1 10 Tf 48.00 714.89 Td (`src/services/contactsApi.js`.) Tj ET
+BT /F2 12 Tf 48.00 681.89 Td (6.1 Pr\351-condi\347\343o) Tj ET
+BT /F1 10 Tf 48.00 654.89 Td (O usu\341rio precisa estar autenticado para acessar `/agenda`. A rota tem `meta: { requiresAuth:) Tj ET
+BT /F1 10 Tf 48.00 640.89 Td (true }` e o guard em `src/router/index.js` chama `authStore.authenticate\(\)`. Sem sess\343o v\341lida, o) Tj ET
+BT /F1 10 Tf 48.00 626.89 Td (usu\341rio \351 redirecionado para `/login`.) Tj ET
+BT /F2 12 Tf 48.00 593.89 Td (6.2 Campos exibidos no cadastro) Tj ET
+BT /F1 10 Tf 48.00 566.89 Td (O formul\341rio de novo contato exibe apenas:) Tj ET
+BT /F3 8.2 Tf 48.00 543.89 Td (Campo | Regra) Tj ET
+BT /F3 8.2 Tf 48.00 529.89 Td (Nome | Obrigat\363rio, m\341ximo de 50 caracteres.) Tj ET
+BT /F3 8.2 Tf 48.00 517.89 Td (E-mail | Obrigat\363rio, m\341ximo de 40 caracteres e formato v\341lido.) Tj ET
+BT /F3 8.2 Tf 48.00 505.89 Td (Telefone | Obrigat\363rio, celular brasileiro com 11 d\355gitos locais: DDD + n\372mero.) Tj ET
+BT /F1 10 Tf 48.00 487.89 Td (A senha n\343o aparece no formul\341rio de cadastro de contato.) Tj ET
+BT /F2 12 Tf 48.00 454.89 Td (6.3 Valida\347\343o de nome) Tj ET
+BT /F1 10 Tf 48.00 427.89 Td (Regra implementada em `validateNameField\(\)`:) Tj ET
+BT /F1 10 Tf 48.00 404.89 Td (* o nome \351 obrigat\363rio;) Tj ET
+BT /F1 10 Tf 48.00 387.89 Td (* o nome \351 validado ap\363s `trim\(\)`;) Tj ET
+BT /F1 10 Tf 48.00 370.89 Td (* o limite m\341ximo \351 `NAME_MAX_LENGTH = 50`;) Tj ET
+BT /F1 10 Tf 48.00 353.89 Td (* se inv\341lido, o cadastro \351 bloqueado e a mensagem de campo \351 exibida.) Tj ET
+BT /F2 12 Tf 48.00 320.89 Td (6.4 Valida\347\343o de e-mail) Tj ET
+BT /F1 10 Tf 48.00 293.89 Td (Regra implementada em `validateEmailField\(\)`:) Tj ET
+BT /F1 10 Tf 48.00 270.89 Td (* o e-mail \351 obrigat\363rio;) Tj ET
+BT /F1 10 Tf 48.00 253.89 Td (* o limite m\341ximo \351 `EMAIL_MAX_LENGTH = 40`;) Tj ET
+BT /F1 10 Tf 48.00 236.89 Td (* o formato precisa passar no padr\343o `EMAIL_PATTERN`;) Tj ET
+BT /F1 10 Tf 48.00 219.89 Td (* erros retornados pela API, como e-mail duplicado ou inv\341lido, s\343o traduzidos em) Tj ET
+BT /F1 10 Tf 48.00 205.89 Td (  `src/services/apiClient.js`.) Tj ET
+BT /F2 12 Tf 48.00 172.89 Td (6.5 Valida\347\343o e normaliza\347\343o de telefone) Tj ET
+BT /F1 10 Tf 48.00 145.89 Td (Regra implementada em `setPhone\(\)`, `formatBrazilianMobilePhone\(\)`,) Tj ET
+BT /F1 10 Tf 48.00 131.89 Td (`isValidBrazilianMobilePhone\(\)` e `toBrazilianE164Phone\(\)`:) Tj ET
+BT /F1 10 Tf 48.00 108.89 Td (* o telefone \351 obrigat\363rio;) Tj ET
+BT /F1 10 Tf 48.00 91.89 Td (* o frontend aceita digita\347\343o num\351rica, telefone com m\341scara ou telefone colado com `+55`;) Tj ET
+BT /F1 10 Tf 48.00 74.89 Td (* a interface mostra o telefone como `+55 \(xx\) xxxxx-xxxx`;) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 5 de 8) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 3477 >>
+stream
+BT /F1 10 Tf 48.00 789.89 Td (* o n\372mero precisa conter 11 d\355gitos locais, sendo 2 de DDD e 9 do celular;) Tj ET
+BT /F1 10 Tf 48.00 772.89 Td (* no payload enviado ao backend, o telefone \351 convertido para formato compacto com DDI:) Tj ET
+BT /F1 10 Tf 48.00 758.89 Td (  `+55DDDN\332MERO`, por exemplo `+5581997236704`;) Tj ET
+BT /F1 10 Tf 48.00 741.89 Td (* erros retornados pela API, como telefone duplicado ou inv\341lido, s\343o traduzidos em) Tj ET
+BT /F1 10 Tf 48.00 727.89 Td (  `src/services/apiClient.js`.) Tj ET
+BT /F2 12 Tf 48.00 694.89 Td (6.6 Payload de cadastro) Tj ET
+BT /F1 10 Tf 48.00 667.89 Td (Ao salvar um novo contato, `saveContact\(\)` monta o payload base:) Tj ET
+BT /F3 8.2 Tf 48.00 641.89 Td ({) Tj ET
+BT /F3 8.2 Tf 48.00 630.89 Td ("id": "",) Tj ET
+BT /F3 8.2 Tf 48.00 619.89 Td ("name": "Nome do contato",) Tj ET
+BT /F3 8.2 Tf 48.00 608.89 Td ("email": "email@dominio.com",) Tj ET
+BT /F3 8.2 Tf 48.00 597.89 Td ("phone": "+5581997236704") Tj ET
+BT /F3 8.2 Tf 48.00 586.89 Td (}) Tj ET
+BT /F1 10 Tf 48.00 566.89 Td (Como o backend usa o endpoint `/User`, o frontend acrescenta automaticamente uma senha padr\343o ao) Tj ET
+BT /F1 10 Tf 48.00 552.89 Td (cadastrar:) Tj ET
+BT /F3 8.2 Tf 48.00 526.89 Td ({) Tj ET
+BT /F3 8.2 Tf 48.00 515.89 Td ("name": "Nome do contato",) Tj ET
+BT /F3 8.2 Tf 48.00 504.89 Td ("email": "email@dominio.com",) Tj ET
+BT /F3 8.2 Tf 48.00 493.89 Td ("phone": "+5581997236704",) Tj ET
+BT /F3 8.2 Tf 48.00 482.89 Td ("password": "Admin@123456") Tj ET
+BT /F3 8.2 Tf 48.00 471.89 Td (}) Tj ET
+BT /F1 10 Tf 48.00 451.89 Td (A senha padr\343o est\341 declarada como `DEFAULT_CONTACT_PASSWORD = 'Admin@123456'` em) Tj ET
+BT /F1 10 Tf 48.00 437.89 Td (`src/stores/contactsStore.js` e \351 coberta por teste em) Tj ET
+BT /F1 10 Tf 48.00 423.89 Td (`src/stores/__tests__/contactsStore.spec.js`.) Tj ET
+BT /F2 12 Tf 48.00 390.89 Td (6.7 Envio para a API) Tj ET
+BT /F1 10 Tf 48.00 363.89 Td (O cadastro chama `contactsApi.create\(\)` em `src/services/contactsApi.js`, que envia:) Tj ET
+BT /F1 10 Tf 48.00 340.89 Td (* m\351todo: `POST`;) Tj ET
+BT /F1 10 Tf 48.00 323.89 Td (* endpoint: `/api/User`;) Tj ET
+BT /F1 10 Tf 48.00 306.89 Td (* autentica\347\343o: `Authorization: Bearer <token>`;) Tj ET
+BT /F1 10 Tf 48.00 289.89 Td (* corpo: `name`, `email`, `phone` e `password`.) Tj ET
+BT /F1 10 Tf 48.00 266.89 Td (Antes do envio, `contactsApi` aplica `trim\(\)` em nome, e-mail e telefone.) Tj ET
+BT /F2 12 Tf 48.00 233.89 Td (6.8 Comportamento ap\363s cadastro com sucesso) Tj ET
+BT /F1 10 Tf 48.00 206.89 Td (Quando a API confirma o cadastro:) Tj ET
+BT /F1 10 Tf 48.00 183.89 Td (* o frontend mostra a mensagem `Contato cadastrado.`;) Tj ET
+BT /F1 10 Tf 48.00 166.89 Td (* o formul\341rio \351 limpo;) Tj ET
+BT /F1 10 Tf 48.00 149.89 Td (* a lista de contatos \351 recarregada;) Tj ET
+BT /F1 10 Tf 48.00 132.89 Td (* se o contato rec\351m-criado for encontrado por e-mail e telefone, seu ID \351 promovido para a lista) Tj ET
+BT /F1 10 Tf 48.00 118.89 Td (  local de recentes;) Tj ET
+BT /F1 10 Tf 48.00 101.89 Td (* a p\341gina atual volta para a primeira p\341gina;) Tj ET
+BT /F1 10 Tf 48.00 84.89 Td (* a listagem prioriza contatos por data de cria\347\343o quando a API retorna um campo como) Tj ET
+BT /F1 10 Tf 48.00 70.89 Td (  `createdAt`; se n\343o houver data, usa a lista local de contatos recentes.) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 6 de 8) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 3757 >>
+stream
+BT /F2 12 Tf 48.00 779.89 Td (6.9 Diferen\347a entre cadastro e edi\347\343o) Tj ET
+BT /F1 10 Tf 48.00 752.89 Td (No cadastro, o frontend envia uma senha padr\343o porque o endpoint usado \351 de usu\341rio:) Tj ET
+BT /F1 10 Tf 48.00 729.89 Td (* `POST /api/User`) Tj ET
+BT /F1 10 Tf 48.00 712.89 Td (* campos: `name`, `email`, `phone`, `password`) Tj ET
+BT /F1 10 Tf 48.00 689.89 Td (Na edi\347\343o, o frontend n\343o altera senha:) Tj ET
+BT /F1 10 Tf 48.00 666.89 Td (* `PUT /api/User/{id}`) Tj ET
+BT /F1 10 Tf 48.00 649.89 Td (* campos: `id`, `name`, `email`, `phone`) Tj ET
+BT /F1 10 Tf 48.00 626.89 Td (Altera\347\343o de senha \351 uma regra separada, feita apenas para o usu\341rio autenticado em:) Tj ET
+BT /F1 10 Tf 48.00 603.89 Td (* `PATCH /api/User/me/password`) Tj ET
+BT /F2 12 Tf 48.00 570.89 Td (6.10 Regras de consulta, busca, pagina\347\343o e exclus\343o) Tj ET
+BT /F1 10 Tf 48.00 543.89 Td (Al\351m do cadastro, a tela de agenda possui:) Tj ET
+BT /F3 8.2 Tf 48.00 520.89 Td (Funcionalidade | Regra) Tj ET
+BT /F3 8.2 Tf 48.00 506.89 Td (Consulta | Bot\343o de visualizar chama `GET /api/User/{id}` e mostra detalhes do contato selecionado.) Tj ET
+BT /F3 8.2 Tf 48.00 494.89 Td (Busca | Filtra localmente por nome, e-mail ou telefone.) Tj ET
+BT /F3 8.2 Tf 48.00 482.89 Td (Pagina\347\343o | Exibe 10 contatos por p\341gina, definido por `CONTACTS_PER_PAGE = 10`.) Tj ET
+BT /F3 8.2 Tf 48.00 470.89 Td (Edi\347\343o | Preenche o formul\341rio com o contato selecionado e salva por `PUT /api/User/{id}`.) Tj ET
+BT /F3 8.2 Tf 48.00 458.89 Td (Exclus\343o | Pede confirma\347\343o com `window.confirm\(\)` e remove por `DELETE /api/User/{id}`.) Tj ET
+BT /F2 15 Tf 48.00 426.89 Td (7. Seguran\347a e sess\343o) Tj ET
+BT /F1 10 Tf 48.00 393.89 Td (A autentica\347\343o usa JWT:) Tj ET
+BT /F1 10 Tf 48.00 370.89 Td (* o login chama `POST /api/Auth/login`;) Tj ET
+BT /F1 10 Tf 48.00 353.89 Td (* a resposta \351 normalizada por `normalizeAuthResponse\(\)`;) Tj ET
+BT /F1 10 Tf 48.00 336.89 Td (* a sess\343o \351 salva no `localStorage` com token, tipo, expira\347\343o, usu\341rio e data de autentica\347\343o;) Tj ET
+BT /F1 10 Tf 48.00 319.89 Td (* a validade considera a expira\347\343o do token com uma margem de 30 segundos;) Tj ET
+BT /F1 10 Tf 48.00 302.89 Td (* rotas protegidas validam a sess\343o antes de permitir acesso;) Tj ET
+BT /F1 10 Tf 48.00 285.89 Td (* chamadas protegidas recebem header `Authorization`;) Tj ET
+BT /F1 10 Tf 48.00 268.89 Td (* ao receber erro 401 em chamada autenticada, a sess\343o local \351 removida.) Tj ET
+BT /F1 10 Tf 48.00 245.89 Td (Observa\347\343o t\351cnica: por usar `localStorage`, a sess\343o persiste ap\363s recarregar a p\341gina, mas) Tj ET
+BT /F1 10 Tf 48.00 231.89 Td (tamb\351m exige cuidado contra riscos de XSS. A seguran\347a final depende de o frontend manter a) Tj ET
+BT /F1 10 Tf 48.00 217.89 Td (aplica\347\343o livre de inje\347\343o de scripts e o backend validar todas as regras cr\355ticas.) Tj ET
+BT /F2 15 Tf 48.00 180.89 Td (8. Testes existentes) Tj ET
+BT /F1 10 Tf 48.00 147.89 Td (O projeto possui testes unit\341rios e de componente com Vitest:) Tj ET
+BT /F1 10 Tf 48.00 124.89 Td (* `npm run test:unit` executa a su\355te;) Tj ET
+BT /F1 10 Tf 48.00 107.89 Td (* `contactsStore.spec.js` cobre valida\347\365es de e-mail, telefone, senha padr\343o e ordena\347\343o;) Tj ET
+BT /F1 10 Tf 48.00 90.89 Td (* `ContactsView.spec.js` cobre cadastro, edi\347\343o, pagina\347\343o, valida\347\365es e troca de senha;) Tj ET
+BT /F1 10 Tf 48.00 73.89 Td (* `LoginView.spec.js` cobre autentica\347\343o, erro de login, persist\352ncia da sess\343o e visibilidade da) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 7 de 8) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 1580 >>
+stream
+BT /F1 10 Tf 48.00 789.89 Td (  senha.) Tj ET
+BT /F1 10 Tf 48.00 766.89 Td (Esses testes ajudam a garantir que as principais regras de neg\363cio do frontend continuem) Tj ET
+BT /F1 10 Tf 48.00 752.89 Td (funcionando ap\363s altera\347\365es.) Tj ET
+BT /F2 15 Tf 48.00 715.89 Td (9. Resumo executivo) Tj ET
+BT /F1 10 Tf 48.00 682.89 Td (O AgendaFront \351 uma SPA Vue 3 com arquitetura modular por responsabilidade. Ela utiliza Vue) Tj ET
+BT /F1 10 Tf 48.00 668.89 Td (Router para navega\347\343o, Pinia para estado global, servi\347os JavaScript para integra\347\343o com API,) Tj ET
+BT /F1 10 Tf 48.00 654.89 Td (Tailwind para interface, Vitest para testes e Docker/Nginx para distribui\347\343o.) Tj ET
+BT /F1 10 Tf 48.00 631.89 Td (O projeto n\343o \351 RPA e n\343o \351 um ERP completo. Ele \351 uma aplica\347\343o frontend de agenda de contatos,) Tj ET
+BT /F1 10 Tf 48.00 617.89 Td (com autentica\347\343o JWT e CRUD sobre usu\341rios/contatos da API CoreFlow.) Tj ET
+BT /F1 10 Tf 48.00 594.89 Td (A principal regra de neg\363cio do cadastro \351: um usu\341rio autenticado cadastra contatos informando) Tj ET
+BT /F1 10 Tf 48.00 580.89 Td (nome, e-mail e celular brasileiro; o frontend valida esses campos, formata o telefone, envia o) Tj ET
+BT /F1 10 Tf 48.00 566.89 Td (telefone normalizado e adiciona internamente a senha padr\343o `Admin@123456` porque o backend) Tj ET
+BT /F1 10 Tf 48.00 552.89 Td (cadastra o contato pelo endpoint de usu\341rio.) Tj ET
+BT /F1 8 Tf 48.00 28 Td (AgendaFront - Documentacao tecnica) Tj ET
+BT /F1 8 Tf 489.28 28 Td (Pagina 8 de 8) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 20 0 R >>
+endobj
+xref
+0 22
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000169 00000 n 
+0000000266 00000 n 
+0000000368 00000 n 
+0000000463 00000 n 
+0000005253 00000 n 
+0000005405 00000 n 
+0000009290 00000 n 
+0000009442 00000 n 
+0000012877 00000 n 
+0000013031 00000 n 
+0000017359 00000 n 
+0000017513 00000 n 
+0000020834 00000 n 
+0000020988 00000 n 
+0000024518 00000 n 
+0000024672 00000 n 
+0000028482 00000 n 
+0000028636 00000 n 
+0000030269 00000 n 
+trailer
+<< /Size 22 /Root 1 0 R >>
+startxref
+30423
+%%EOF

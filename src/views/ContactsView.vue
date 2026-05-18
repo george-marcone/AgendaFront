@@ -88,11 +88,7 @@ const ownPasswordStrength = computed(() => calculatePasswordStrength(passwordFor
 const mailpitUrl = computed(() => {
   const configuredUrl = import.meta.env.VITE_MAILPIT_URL?.trim();
 
-  if (configuredUrl) {
-    return configuredUrl;
-  }
-
-  return import.meta.env.DEV ? 'http://localhost:8025' : '';
+  return configuredUrl || 'http://localhost:8025';
 });
 
 function getFirstAndLastName(user) {

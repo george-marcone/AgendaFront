@@ -1,0 +1,138 @@
+Caminhos da aplicacao CoreFlow / AgendaFront
+Atualizado em: 2026-05-18
+
+FRONTEND LOCAL
+Aplicacao local com Vite:
+http://localhost:5173
+
+Login local:
+http://localhost:5173/login
+
+Agenda local:
+http://localhost:5173/agenda
+
+FRONTEND LOCAL VIA DOCKER
+Aplicacao em Docker:
+http://localhost:5173
+
+Login em Docker:
+http://localhost:5173/login
+
+Agenda em Docker:
+http://localhost:5173/agenda
+
+FRONTEND NO RENDER
+Aplicacao publicada:
+https://agendafront.onrender.com
+
+Login publicado:
+https://agendafront.onrender.com/login
+
+Agenda publicada:
+https://agendafront.onrender.com/agenda
+
+Observacao:
+Se o Render gerar outro dominio para o Static Site, substitua
+https://agendafront.onrender.com pela URL exibida no painel do Render.
+
+API LOCAL VIA DOTNET RUN
+API HTTP:
+http://localhost:5062
+
+Swagger HTTP:
+http://localhost:5062/swagger
+
+OpenAPI JSON HTTP:
+http://localhost:5062/swagger/v1/swagger.json
+
+API HTTPS:
+https://localhost:7200
+
+Swagger HTTPS:
+https://localhost:7200/swagger
+
+OpenAPI JSON HTTPS:
+https://localhost:7200/swagger/v1/swagger.json
+
+API LOCAL VIA DOCKER
+API:
+http://localhost:5088
+
+Swagger:
+http://localhost:5088/swagger
+
+OpenAPI JSON:
+http://localhost:5088/swagger/v1/swagger.json
+
+API NO RENDER
+API publicada:
+https://agendaapi-8g3b.onrender.com
+
+Swagger publicado:
+https://agendaapi-8g3b.onrender.com/swagger
+
+OpenAPI JSON publicado:
+https://agendaapi-8g3b.onrender.com/swagger/v1/swagger.json
+
+ROTAS PRINCIPAIS DA API
+Login:
+POST /api/Auth/login
+
+Validar autenticacao:
+GET /api/Auth/authenticate
+
+Listar contatos:
+GET /api/User
+
+Consultar contato:
+GET /api/User/{id}
+
+Cadastrar contato:
+POST /api/User
+
+Editar contato:
+PUT /api/User/{id}
+
+Alterar propria senha:
+PATCH /api/User/me/password
+
+Remover contato:
+DELETE /api/User/{id}
+
+PLATAFORMA DE EMAIL DE TESTE LOCAL
+Mailpit UI:
+http://localhost:8025
+
+Mailpit SMTP:
+localhost:1025
+
+Observacao:
+O link do Mailpit aparece nos toasts do frontend somente quando a aplicacao
+esta rodando localmente ou via Docker local. Em producao publica, como Render,
+o toast exibe apenas a confirmacao do evento e oculta o link do Mailpit.
+
+RABBITMQ LOCAL VIA DOCKER
+RabbitMQ AMQP:
+amqp://localhost:5672
+
+RabbitMQ Management:
+http://localhost:15672
+
+Usuario RabbitMQ local:
+guest
+
+Senha RabbitMQ local:
+guest
+
+BANCO LOCAL VIA DOCKER
+SQL Server:
+localhost,1433
+
+Database:
+CoreFlowDb
+
+Usuario:
+sa
+
+Senha:
+Str0ngP@ssw0rd!

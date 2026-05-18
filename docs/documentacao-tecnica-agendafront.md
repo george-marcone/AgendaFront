@@ -22,7 +22,7 @@ A aplicação consome a API CoreFlow pelos endpoints `/api/Auth` e `/api/User`. 
 | Swagger da API | `https://agendaapi-8g3b.onrender.com/swagger` | Interface Swagger UI disponível no deploy publicado. |
 | OpenAPI JSON | `https://agendaapi-8g3b.onrender.com/swagger/v1/swagger.json` | Documento OpenAPI consumível por ferramentas. |
 | Healthcheck da API | `https://agendaapi-8g3b.onrender.com/health` | Endpoint simples para verificar disponibilidade. |
-| Plataforma de e-mail de teste | `http://localhost:8025` | Endereço atual do Mailpit local. Para acesso público, publicar uma instância do Mailpit e trocar `VITE_MAILPIT_URL`. |
+| Plataforma de e-mail de teste local | `http://localhost:8025` | Endereço do Mailpit local. O link aparece nos toasts apenas em `localhost`, Docker local ou IPs privados; em produção pública, como Render, fica oculto. |
 
 ## 2. Tipo de aplicação
 
@@ -204,7 +204,7 @@ Em desenvolvimento local e Docker, o frontend usa `VITE_API_BASE_URL=/api` por p
 
 No deploy publicado como Static Site no Render, não há Nginx do projeto fazendo proxy. Por isso, `.env.production` define `VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api`, e o browser chama a API pública diretamente. Nesse cenário, o backend precisa permitir CORS para `https://agendafront.onrender.com`.
 
-O toast de sucesso da agenda também mostra a plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL`. O valor atual é `http://localhost:8025`, que funciona quando o Mailpit está rodando na máquina de quem acessa. Para acesso público por outras pessoas, esse valor deve ser substituído por uma URL pública do Mailpit.
+O toast de sucesso da agenda também pode mostrar a plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL`. O valor atual é `http://localhost:8025`, adequado para Mailpit rodando localmente. O front exibe esse link apenas quando a aplicação está em ambiente local ou Docker local (`localhost`, `127.0.0.1` ou IPs privados). Em produção pública, como Render, o toast mantém a confirmação positiva do evento e oculta o link do Mailpit.
 
 Endpoints consumidos:
 
@@ -317,7 +317,7 @@ Quando a API confirma o cadastro:
 - se o contato recém-criado for encontrado por e-mail e telefone, seu ID é promovido para a lista local de recentes;
 - a página atual volta para a primeira página;
 - a listagem prioriza contatos por data de criação quando a API retorna um campo como `createdAt`; se não houver data, usa a lista local de contatos recentes.
-- o frontend mostra no toast o link da plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL`; se a variável estiver vazia, usa `http://localhost:8025` como padrão.
+- o frontend mostra no toast o link da plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL` somente em ambiente local ou Docker local; em produção pública o link fica oculto. Se a variável estiver vazia, usa `http://localhost:8025` como padrão local.
 
 ### 6.9 Diferença entre cadastro e edição
 

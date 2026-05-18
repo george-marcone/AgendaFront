@@ -28,6 +28,7 @@ import {
   useContactsStore,
 } from '../stores/contactsStore';
 import { calculatePasswordStrength, PASSWORD_MIN_LENGTH } from '../services/passwordStrength';
+import { isLocalRuntime } from '../services/runtimeEnvironment';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -90,6 +91,7 @@ const mailpitUrl = computed(() => {
 
   return configuredUrl || 'http://localhost:8025';
 });
+const showMailpitLink = computed(() => isLocalRuntime());
 
 function getFirstAndLastName(user) {
   const explicitName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
@@ -500,7 +502,7 @@ onMounted(() => contactsStore.loadContacts());
         </p>
         <div v-if="successMessage" class="feedback success" role="status">
           <span>{{ successMessage }}</span>
-          <span v-if="mailpitUrl" class="feedback-mailpit">
+          <span v-if="showMailpitLink" class="feedback-mailpit">
             E-mails disponíveis no Mailpit:
             <a :href="mailpitUrl" target="_blank" rel="noopener noreferrer">
               {{ mailpitUrl }}

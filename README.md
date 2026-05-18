@@ -57,6 +57,7 @@ Variáveis do front:
 ```env
 VITE_API_BASE_URL=/api
 VITE_FRONTEND_PORT=5173
+VITE_MAILPIT_URL=http://localhost:8025
 
 # Backend targets for local frontend development.
 VITE_CORE_FLOW_LOCAL_TARGET=http://localhost:5062
@@ -77,6 +78,12 @@ Cenários comuns:
 - Front e API no mesmo `docker-compose`/network: use `VITE_CORE_FLOW_DOCKER_TARGET=http://coreflow_api:8080`.
 
 Manter `VITE_API_BASE_URL=/api` evita depender de CORS no backend, porque o proxy faz a ponte.
+
+### Plataforma de e-mail de teste no toast
+
+Depois de cadastrar, editar ou remover um contato, o toast de sucesso pode exibir o link do Mailpit (`VITE_MAILPIT_URL`) para visualizar os e-mails gerados pelo Worker. Esse link aparece apenas quando o frontend estiver rodando em ambiente local ou Docker local, como `localhost`, `127.0.0.1` ou IPs privados (`192.168.x.x`, `10.x.x.x`, `172.16.x.x` a `172.31.x.x`).
+
+Em produção, como Render ou outro domínio público, o toast continua mostrando a confirmação positiva (`Contato cadastrado.`, `Contato atualizado.` ou `Contato removido.`), mas oculta o caminho do Mailpit.
 
 Endpoints consumidos:
 

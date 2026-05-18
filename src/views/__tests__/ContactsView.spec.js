@@ -182,6 +182,7 @@ describe('ContactsView', () => {
       }),
     );
     expect(wrapper.text()).toContain('Contato cadastrado.');
+    expect(wrapper.find('.feedback-mailpit a').attributes('href')).toBe('http://localhost:8025');
     expect(wrapper.text()).toContain('Ana Silva');
     expect(wrapper.text()).toContain('+55 (81) 99723-6704');
   });
@@ -276,7 +277,32 @@ describe('ContactsView', () => {
       }),
     );
     expect(wrapper.text()).toContain('Contato atualizado.');
+    expect(wrapper.find('.feedback-mailpit a').attributes('href')).toBe('http://localhost:8025');
     expect(wrapper.text()).toContain('+55 (11) 98888-7777');
+  });
+
+  it('informa o Mailpit apos remover contato', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
+    contactsApiMock.list
+      .mockResolvedValueOnce([
+        {
+          id: 'contact-1',
+          name: 'George Marcone',
+          email: 'george@email.com',
+          phone: '+5511900000000',
+        },
+      ])
+      .mockResolvedValueOnce([]);
+
+    const wrapper = mountContactsView();
+    await flushPromises();
+
+    await wrapper.find('button[aria-label="Excluir contato"]').trigger('click');
+    await flushPromises();
+
+    expect(contactsApiMock.remove).toHaveBeenCalledWith('contact-1');
+    expect(wrapper.text()).toContain('Contato removido.');
+    expect(wrapper.find('.feedback-mailpit a').attributes('href')).toBe('http://localhost:8025');
   });
 
   it('valida campos obrigatórios antes de enviar o cadastro', async () => {

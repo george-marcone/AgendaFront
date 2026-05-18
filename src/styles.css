@@ -376,6 +376,17 @@ h3 {
   color: var(--success);
 }
 
+.feedback-mailpit {
+  @apply mt-1.5 block;
+  overflow-wrap: anywhere;
+}
+
+.feedback-mailpit a {
+  color: var(--primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .empty-state {
   @apply grid min-h-[190px] place-items-center gap-2.5 text-center font-extrabold;
   color: var(--muted);

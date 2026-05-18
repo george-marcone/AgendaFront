@@ -85,6 +85,7 @@ const {
 } = contactsStore;
 const loggedUserName = computed(() => getFirstAndLastName(authStore.user));
 const ownPasswordStrength = computed(() => calculatePasswordStrength(passwordForm.value.newPassword));
+const mailpitUrl = import.meta.env.VITE_MAILPIT_URL || 'http://localhost:8025';
 
 function getFirstAndLastName(user) {
   const explicitName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
@@ -493,9 +494,15 @@ onMounted(() => contactsStore.loadContacts());
         <p v-if="errorMessage" class="feedback error" role="alert">
           {{ errorMessage }}
         </p>
-        <p v-if="successMessage" class="feedback success" role="status">
-          {{ successMessage }}
-        </p>
+        <div v-if="successMessage" class="feedback success" role="status">
+          <span>{{ successMessage }}</span>
+          <span class="feedback-mailpit">
+            E-mails disponíveis no Mailpit:
+            <a :href="mailpitUrl" target="_blank" rel="noopener noreferrer">
+              {{ mailpitUrl }}
+            </a>
+          </span>
+        </div>
 
         <div v-if="loading" class="empty-state">
           <LoaderCircle class="spin" :size="26" />

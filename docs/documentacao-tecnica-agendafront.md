@@ -2,11 +2,27 @@
 
 Gerado em: 16/05/2026
 
+Atualizado em: 18/05/2026
+
 ## 1. Visão geral
 
 O AgendaFront é o frontend da Agenda de Contatos da GMMS Tech Solutions. Ele foi desenvolvido como uma aplicação web em Vue.js para autenticar usuários e permitir a gestão de contatos por meio de operações de cadastro, consulta, edição, exclusão, busca e paginação.
 
 A aplicação consome a API CoreFlow pelos endpoints `/api/Auth` e `/api/User`. O frontend não guarda os contatos como fonte definitiva de dados; ele atua como camada de interface, validação inicial, sessão do usuário e comunicação com o backend.
+
+### 1.1 Endereços publicados
+
+| Recurso | URL | Observação |
+| --- | --- | --- |
+| Frontend publicado | `https://agendafront.onrender.com` | Static Site no Render. |
+| Login publicado | `https://agendafront.onrender.com/login` | Rota client-side da SPA. Exige rewrite `/* -> /index.html` no Render. |
+| Agenda publicada | `https://agendafront.onrender.com/agenda` | Rota protegida por autenticação JWT. |
+| API backend publicada | `https://agendaapi-8g3b.onrender.com` | Base pública do CoreFlow API. |
+| Base URL usada pelo front em produção | `https://agendaapi-8g3b.onrender.com/api` | Valor de `VITE_API_BASE_URL` em `.env.production`. |
+| Swagger da API | `https://agendaapi-8g3b.onrender.com/swagger` | Interface Swagger UI disponível no deploy publicado. |
+| OpenAPI JSON | `https://agendaapi-8g3b.onrender.com/swagger/v1/swagger.json` | Documento OpenAPI consumível por ferramentas. |
+| Healthcheck da API | `https://agendaapi-8g3b.onrender.com/health` | Endpoint simples para verificar disponibilidade. |
+| Plataforma de e-mail de teste | Não publicada atualmente | Em desenvolvimento, Mailpit fica em `http://localhost:8025`. Em produção, configurar `VITE_MAILPIT_URL` somente se houver uma instância pública do Mailpit. |
 
 ## 2. Tipo de aplicação
 
@@ -41,7 +57,7 @@ A arquitetura é uma SPA client-side com separação simples por responsabilidad
 | Regras auxiliares | Calculam força de senha e validações/formatações de contato. | `src/services/passwordStrength.js`, `src/stores/contactsStore.js` |
 | Estilos | Define o visual global com Tailwind CSS e classes customizadas. | `src/styles.css` |
 | Testes | Validam tela de login, tela de contatos e regras da store de contatos. | `src/views/__tests__`, `src/stores/__tests__` |
-| Build e deploy | Configura Vite, Docker e Nginx para servir a SPA e encaminhar chamadas `/api`. | `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx/default.conf.template` |
+| Build e deploy | Configura Vite, Docker, Nginx e Render para servir a SPA e integrar com a API. | `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx/default.conf.template`, `render.yaml`, `.env.production` |
 
 O fluxo arquitetural principal é:
 
@@ -184,7 +200,9 @@ Uso no projeto:
 
 ## 5. Integração com backend
 
-O frontend usa `VITE_API_BASE_URL=/api` por padrão. Isso permite que o browser sempre chame uma rota relativa `/api`, enquanto Vite ou Nginx fazem o proxy para a API CoreFlow.
+Em desenvolvimento local e Docker, o frontend usa `VITE_API_BASE_URL=/api` por padrão. Isso permite que o browser chame uma rota relativa `/api`, enquanto Vite ou Nginx fazem o proxy para a API CoreFlow.
+
+No deploy publicado como Static Site no Render, não há Nginx do projeto fazendo proxy. Por isso, `.env.production` define `VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api`, e o browser chama a API pública diretamente. Nesse cenário, o backend precisa permitir CORS para `https://agendafront.onrender.com`.
 
 Endpoints consumidos:
 
@@ -297,6 +315,7 @@ Quando a API confirma o cadastro:
 - se o contato recém-criado for encontrado por e-mail e telefone, seu ID é promovido para a lista local de recentes;
 - a página atual volta para a primeira página;
 - a listagem prioriza contatos por data de criação quando a API retorna um campo como `createdAt`; se não houver data, usa a lista local de contatos recentes.
+- se `VITE_MAILPIT_URL` estiver configurado, o frontend mostra o link da plataforma de e-mail de teste; em produção, esse link fica oculto quando a variável está vazia.
 
 ### 6.9 Diferença entre cadastro e edição
 

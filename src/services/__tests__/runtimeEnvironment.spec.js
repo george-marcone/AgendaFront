@@ -16,7 +16,7 @@ describe('runtimeEnvironment', () => {
     expect(isLocalRuntime(hostname)).toBe(true);
   });
 
-  it.each(['agenda-front.onrender.com', 'example.com', '172.32.0.1'])(
+  it.each(['agenda-front-wheat.vercel.app', 'agenda-front.onrender.com', 'example.com', '172.32.0.1'])(
     'identifica %s como ambiente publico',
     (hostname) => {
       expect(isLocalRuntime(hostname)).toBe(false);

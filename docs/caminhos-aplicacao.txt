@@ -1,5 +1,5 @@
 Caminhos da aplicacao CoreFlow / AgendaFront
-Atualizado em: 2026-05-18
+Atualizado em: 2026-05-19
 
 FRONTEND LOCAL
 Aplicacao local com Vite:
@@ -21,19 +21,19 @@ http://localhost:5173/login
 Agenda em Docker:
 http://localhost:5173/agenda
 
-FRONTEND NO RENDER
+FRONTEND NA VERCEL
 Aplicacao publicada:
-https://agendafront.onrender.com
+https://agenda-front-wheat.vercel.app
 
 Login publicado:
-https://agendafront.onrender.com/login
+https://agenda-front-wheat.vercel.app/login
 
 Agenda publicada:
-https://agendafront.onrender.com/agenda
+https://agenda-front-wheat.vercel.app/agenda
 
 Observacao:
-Se o Render gerar outro dominio para o Static Site, substitua
-https://agendafront.onrender.com pela URL exibida no painel do Render.
+Se a Vercel gerar outro dominio para o projeto, substitua
+https://agenda-front-wheat.vercel.app pela URL exibida no painel da Vercel.
 
 API LOCAL VIA DOTNET RUN
 API HTTP:
@@ -108,7 +108,7 @@ localhost:1025
 
 Observacao:
 O link do Mailpit aparece nos toasts do frontend somente quando a aplicacao
-esta rodando localmente ou via Docker local. Em producao publica, como Render,
+esta rodando localmente ou via Docker local. Em producao publica, como Vercel ou Render,
 o toast exibe apenas a confirmacao do evento e oculta o link do Mailpit.
 
 RABBITMQ LOCAL VIA DOCKER

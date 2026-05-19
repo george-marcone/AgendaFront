@@ -2,7 +2,7 @@
 
 Gerado em: 16/05/2026
 
-Atualizado em: 18/05/2026
+Atualizado em: 19/05/2026
 
 ## 1. Visão geral
 
@@ -14,15 +14,15 @@ A aplicação consome a API CoreFlow pelos endpoints `/api/Auth` e `/api/User`. 
 
 | Recurso | URL | Observação |
 | --- | --- | --- |
-| Frontend publicado | `https://agendafront.onrender.com` | Static Site no Render. |
-| Login publicado | `https://agendafront.onrender.com/login` | Rota client-side da SPA. Exige rewrite `/* -> /index.html` no Render. |
-| Agenda publicada | `https://agendafront.onrender.com/agenda` | Rota protegida por autenticação JWT. |
+| Frontend publicado | `https://agenda-front-wheat.vercel.app` | Deploy atual na Vercel. |
+| Login publicado | `https://agenda-front-wheat.vercel.app/login` | Rota client-side da SPA. A Vercel serve a SPA com fallback para `index.html`. |
+| Agenda publicada | `https://agenda-front-wheat.vercel.app/agenda` | Rota protegida por autenticação JWT. |
 | API backend publicada | `https://agendaapi-8g3b.onrender.com` | Base pública do CoreFlow API. |
 | Base URL usada pelo front em produção | `https://agendaapi-8g3b.onrender.com/api` | Valor de `VITE_API_BASE_URL` em `.env.production`. |
 | Swagger da API | `https://agendaapi-8g3b.onrender.com/swagger` | Interface Swagger UI disponível no deploy publicado. |
 | OpenAPI JSON | `https://agendaapi-8g3b.onrender.com/swagger/v1/swagger.json` | Documento OpenAPI consumível por ferramentas. |
 | Healthcheck da API | `https://agendaapi-8g3b.onrender.com/health` | Endpoint simples para verificar disponibilidade. |
-| Plataforma de e-mail de teste local | `http://localhost:8025` | Endereço do Mailpit local. O link aparece nos toasts apenas em `localhost`, Docker local ou IPs privados; em produção pública, como Render, fica oculto. |
+| Plataforma de e-mail de teste local | `http://localhost:8025` | Endereço do Mailpit local. O link aparece nos toasts apenas em `localhost`, Docker local ou IPs privados; em produção pública, como Vercel ou Render, fica oculto. |
 
 ## 2. Tipo de aplicação
 
@@ -57,7 +57,7 @@ A arquitetura é uma SPA client-side com separação simples por responsabilidad
 | Regras auxiliares | Calculam força de senha e validações/formatações de contato. | `src/services/passwordStrength.js`, `src/stores/contactsStore.js` |
 | Estilos | Define o visual global com Tailwind CSS e classes customizadas. | `src/styles.css` |
 | Testes | Validam tela de login, tela de contatos e regras da store de contatos. | `src/views/__tests__`, `src/stores/__tests__` |
-| Build e deploy | Configura Vite, Docker, Nginx e Render para servir a SPA e integrar com a API e com a plataforma de e-mail de teste. | `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx/default.conf.template`, `render.yaml`, `.env.production` |
+| Build e deploy | Configura Vite, Docker, Nginx, Render e Vercel para servir a SPA e integrar com a API e com a plataforma de e-mail de teste. | `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx/default.conf.template`, `render.yaml`, `.env.production` |
 
 O fluxo arquitetural principal é:
 
@@ -202,9 +202,9 @@ Uso no projeto:
 
 Em desenvolvimento local e Docker, o frontend usa `VITE_API_BASE_URL=/api` por padrão. Isso permite que o browser chame uma rota relativa `/api`, enquanto Vite ou Nginx fazem o proxy para a API CoreFlow.
 
-No deploy publicado como Static Site no Render, não há Nginx do projeto fazendo proxy. Por isso, `.env.production` define `VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api`, e o browser chama a API pública diretamente. Nesse cenário, o backend precisa permitir CORS para `https://agendafront.onrender.com`.
+No deploy atual publicado na Vercel, não há Nginx do projeto fazendo proxy. Por isso, `.env.production` define `VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api`, e o browser chama a API pública diretamente. Nesse cenário, o backend precisa permitir CORS para `https://agenda-front-wheat.vercel.app`.
 
-O toast de sucesso da agenda também pode mostrar a plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL`. O valor atual é `http://localhost:8025`, adequado para Mailpit rodando localmente. O front exibe esse link apenas quando a aplicação está em ambiente local ou Docker local (`localhost`, `127.0.0.1` ou IPs privados). Em produção pública, como Render, o toast mantém a confirmação positiva do evento e oculta o link do Mailpit.
+O toast de sucesso da agenda também pode mostrar a plataforma de e-mail de teste configurada em `VITE_MAILPIT_URL`. O valor atual é `http://localhost:8025`, adequado para Mailpit rodando localmente. O front exibe esse link apenas quando a aplicação está em ambiente local ou Docker local (`localhost`, `127.0.0.1` ou IPs privados). Em produção pública, como Vercel ou Render, o toast mantém a confirmação positiva do evento e oculta o link do Mailpit.
 
 Endpoints consumidos:
 

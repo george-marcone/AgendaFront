@@ -4,6 +4,37 @@ Frontend do projeto Agenda de Contatos em Vue.js.
 
 O layout usa Tailwind CSS integrado ao Vite, e o estado da aplicacao usa Pinia.
 
+## Ambiente publicado
+
+Frontend publicado na Vercel:
+
+```text
+https://agenda-front-wheat.vercel.app
+```
+
+Rotas principais:
+
+- Login: `https://agenda-front-wheat.vercel.app/login`
+- Agenda: `https://agenda-front-wheat.vercel.app/agenda`
+
+A API publicada usada pelo frontend esta no Render:
+
+```text
+https://agendaapi-8g3b.onrender.com
+```
+
+Na Vercel, a variavel de ambiente de producao deve apontar para:
+
+```env
+VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api
+```
+
+Como o frontend publicado chama a API diretamente pelo browser, o backend precisa liberar CORS para:
+
+```text
+https://agenda-front-wheat.vercel.app
+```
+
 ## Requisitos
 
 - Node.js
@@ -83,7 +114,7 @@ Manter `VITE_API_BASE_URL=/api` evita depender de CORS no backend, porque o prox
 
 Depois de cadastrar, editar ou remover um contato, o toast de sucesso pode exibir o link do Mailpit (`VITE_MAILPIT_URL`) para visualizar os e-mails gerados pelo Worker. Esse link aparece apenas quando o frontend estiver rodando em ambiente local ou Docker local, como `localhost`, `127.0.0.1` ou IPs privados (`192.168.x.x`, `10.x.x.x`, `172.16.x.x` a `172.31.x.x`).
 
-Em produção, como Render ou outro domínio público, o toast continua mostrando a confirmação positiva (`Contato cadastrado.`, `Contato atualizado.` ou `Contato removido.`), mas oculta o caminho do Mailpit.
+Em produção, como Vercel, Render ou outro domínio público, o toast continua mostrando a confirmação positiva (`Contato cadastrado.`, `Contato atualizado.` ou `Contato removido.`), mas oculta o caminho do Mailpit.
 
 Endpoints consumidos:
 

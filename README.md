@@ -35,6 +35,35 @@ Como o frontend publicado chama a API diretamente pelo browser, o backend precis
 https://agenda-front-wheat.vercel.app
 ```
 
+## GitHub Pages
+
+O GitHub Pages tambem pode publicar este frontend. Como o projeto e Vue/Vite, o workflow correto precisa rodar `npm ci`, `npm run build` e publicar a pasta `dist`.
+
+URL esperada do GitHub Pages:
+
+```text
+https://george-marcone.github.io/AgendaFront/
+```
+
+Na aba `Settings > Pages` do GitHub, configure:
+
+```text
+Source: GitHub Actions
+```
+
+O workflow `.github/workflows/github-pages.yml` define:
+
+```env
+VITE_APP_BASE=/AgendaFront/
+VITE_API_BASE_URL=https://agendaapi-8g3b.onrender.com/api
+```
+
+Para o login funcionar a partir do GitHub Pages, o backend precisa liberar CORS para:
+
+```text
+https://george-marcone.github.io
+```
+
 ## Requisitos
 
 - Node.js
@@ -87,6 +116,7 @@ Variáveis do front:
 
 ```env
 VITE_API_BASE_URL=/api
+VITE_APP_BASE=/
 VITE_FRONTEND_PORT=5173
 VITE_MAILPIT_URL=http://localhost:8025
 
